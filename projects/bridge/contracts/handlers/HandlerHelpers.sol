@@ -44,10 +44,8 @@ abstract contract HandlerHelpers is IERCHandler {
     }
 
     /**
-        @notice First verifies {_resourceIDToContractAddress}[{resourceID}] and
-        {_contractAddressToResourceID}[{contractAddress}] are not already set,
-        then sets {_resourceIDToContractAddress} with {contractAddress},
-        {_contractAddressToResourceID} with {resourceID},
+        @notice sets {_resourceIDToContractAddress} with {contractAddress},
+        {_tokenContractAddressToResourceID} with {resourceID},
         and {_contractWhitelist} to true for {contractAddress}.
         @param resourceID ResourceID to be used when making deposits.
         @param contractAddress Address of contract to be called when a deposit is made and a deposited is executed.

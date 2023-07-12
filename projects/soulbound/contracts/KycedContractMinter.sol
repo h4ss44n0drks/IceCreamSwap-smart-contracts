@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./KycedContract.sol";
 
 contract KycedContractMinter is Ownable {
-    KycedContract kycedContract;
-    IERC20 feeToken;
-    uint256 feeAmount;
-    address feeReceiver;
+    KycedContract public kycedContract;
+    IERC20 public feeToken;
+    uint256 public feeAmount;
+    address public feeReceiver;
 
     constructor(
         KycedContract _kycedContract,
@@ -41,6 +41,7 @@ contract KycedContractMinter is Ownable {
         uint256 _feeAmount,
         address _feeReceiver
     ) external onlyOwner {
+        require(feeToken != address(0));
         feeToken = _feeToken;
         feeAmount = _feeAmount;
         feeReceiver = _feeReceiver;

@@ -10,10 +10,6 @@ import "./SmartChefInitializable.sol";
 contract SmartChefFactory is Ownable {
     event NewSmartChefContract(address indexed smartChef);
 
-    constructor() {
-        //
-    }
-
     /*
      * @notice Deploy the pool
      * @param _stakedToken: staked token address
@@ -38,6 +34,9 @@ contract SmartChefFactory is Ownable {
     ) external onlyOwner {
         require(_stakedToken.totalSupply() >= 0);
         require(_rewardToken.totalSupply() >= 0);
+        require(_startBlock >= block.number);
+        require(_startBlock <= _bonusEndBlock.number);
+        require(_rewardPerBlock != 0);
 
         bytes memory bytecode = type(SmartChefInitializable).creationCode;
         // pass constructor argument

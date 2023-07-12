@@ -25,7 +25,7 @@ contract NativeHandlerPercentageFee is IDepositExecute, HandlerHelpers, ERC20Saf
     address payable public _feeReceiver;
 
     // single resource ID this contract handles, which is the resource ID for the chains native coin
-    bytes32 nativeResourceID;
+    bytes32 public nativeResourceID;
 
     /**
         @param bridgeAddress Contract address of previously deployed Bridge.
@@ -169,7 +169,7 @@ contract NativeHandlerPercentageFee is IDepositExecute, HandlerHelpers, ERC20Saf
             (, destinationDomainId, minFeeMultiplierChain) = abi.decode(feeData, (uint8, uint8, uint256));
             _minFeeMultiplierChain[destinationDomainId] = minFeeMultiplierChain;
         } else {
-            require(false, "feeType invalid");
+            revert("feeType invalid");
         }
     }
 

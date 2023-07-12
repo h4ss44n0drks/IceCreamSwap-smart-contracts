@@ -146,7 +146,7 @@ contract ERC20HandlerPercentageFee is IDepositExecute, HandlerHelpers, ERC20Safe
             (, destinationDomainId, minFeeMultiplierChain) = abi.decode(feeData, (uint8, uint8, uint256));
             _minFeeMultiplierChain[destinationDomainId] = minFeeMultiplierChain;
         } else {
-            require(false, "feeType invalid");
+            revert("feeType invalid");
         }
     }
 

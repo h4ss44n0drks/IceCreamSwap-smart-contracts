@@ -124,7 +124,7 @@ contract PSIPadCampaign is IPSIPadCampaign, Initializable, OwnableUpgradeable {
     }
 
     /**
-     * @notice Add liqudity to an exchange and burn the remaining tokens,
+     * @notice Add liquidity to an exchange and burn the remaining tokens,
      * can only be executed when the campaign completes
      */
     function lock() external override onlyOwner {
@@ -319,6 +319,7 @@ contract PSIPadCampaign is IPSIPadCampaign, Initializable, OwnableUpgradeable {
     }
 
     function modifyVestingPercentage(uint256 _vesting_percentage) external onlyOwner {
+        require(_vesting_percentage >= 0 && _vesting_percentage <= 100);
         vesting_percentage = _vesting_percentage;
     }
 
