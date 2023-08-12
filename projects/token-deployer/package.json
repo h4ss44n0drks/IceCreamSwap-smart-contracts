@@ -8,6 +8,11 @@
     "compile": "hardhat compile"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "4.3.2"
+    "@openzeppelin/contracts": "4.3.2",
+    "@typechain/ethers-v5": "^11.1.1",
+    "@typechain/hardhat": "^8.0.3",
+    "ethers": "^5.5.1",
+    "hardhat-abi-exporter": "^2.10.1",
+    "typechain": "^8.3.1"
   }
 }
