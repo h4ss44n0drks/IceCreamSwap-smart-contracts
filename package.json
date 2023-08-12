@@ -1,5 +1,5 @@
 {
-  "name": "icecream-contracts",
+  "name": "@icecreamswap/contracts",
   "version": "1.0.0",
   "description": "IceCreamSwap contracts",
   "private": true,
