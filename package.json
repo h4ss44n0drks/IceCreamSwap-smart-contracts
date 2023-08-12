@@ -1,13 +1,13 @@
 {
-  "name": "pancake-contracts",
+  "name": "icecream-contracts",
   "version": "1.0.0",
-  "description": "Pancake contracts",
+  "description": "IceCreamSwap contracts",
   "private": true,
   "workspaces": [
     "projects/**"
   ],
-  "repository": "https://github.com/pancakeswap/pancake-contracts",
-  "author": "PancakeSwap",
+  "repository": "https://github.com/IceCreamSwapCom/IceCreamSwap-smart-contracts",
+  "author": "IceCreamSwap",
   "license": "MIT",
   "scripts": {
     "format:check": "prettier --check ./**/*.{js,ts,sol}",
