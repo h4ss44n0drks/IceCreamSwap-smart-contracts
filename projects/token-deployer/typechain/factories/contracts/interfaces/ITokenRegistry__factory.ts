@@ -8,6 +8,69 @@ import type { ITokenRegistry, ITokenRegistryInterface } from "../../../contracts
 
 const _abi = [
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "tokenType",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "deployer",
+        type: "address",
+      },
+    ],
+    name: "DeployerRegistered",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "creator",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenType",
+        type: "uint256",
+      },
+    ],
+    name: "TokenRegistered",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "allTokens",
+    outputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "dexRouter",
     outputs: [
@@ -91,6 +154,30 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "getTokensByCreator",
+    outputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "ice",
     outputs: [
@@ -136,6 +223,38 @@ const _abi = [
         internalType: "bool",
         name: "isRegistered",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "creator",
+        type: "address",
+      },
+    ],
+    name: "numTokensByCreator",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "numTokens",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "numTokensCreated",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "numTokens",
+        type: "uint256",
       },
     ],
     stateMutability: "view",

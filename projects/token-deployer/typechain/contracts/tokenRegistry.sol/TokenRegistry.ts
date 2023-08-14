@@ -19,6 +19,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "../..
 
 export interface TokenRegistryInterface extends utils.Interface {
   functions: {
+    "allTokens(uint256)": FunctionFragment;
     "changeDexRouter(address)": FunctionFragment;
     "changeFeeReceiver(address)": FunctionFragment;
     "changeIceToken(address)": FunctionFragment;
@@ -27,9 +28,13 @@ export interface TokenRegistryInterface extends utils.Interface {
     "getDeployerTokenType(address)": FunctionFragment;
     "getTokenCreator(address)": FunctionFragment;
     "getTokenType(address)": FunctionFragment;
+    "getTokensByCreator(address,uint256)": FunctionFragment;
     "ice()": FunctionFragment;
     "isDeployerRegistered(address)": FunctionFragment;
     "isTokenRegistered(address)": FunctionFragment;
+    "manualRegisterToken(address,address,address)": FunctionFragment;
+    "numTokensByCreator(address)": FunctionFragment;
+    "numTokensCreated()": FunctionFragment;
     "owner()": FunctionFragment;
     "registerToken(address,address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -39,6 +44,7 @@ export interface TokenRegistryInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "allTokens"
       | "changeDexRouter"
       | "changeFeeReceiver"
       | "changeIceToken"
@@ -47,9 +53,13 @@ export interface TokenRegistryInterface extends utils.Interface {
       | "getDeployerTokenType"
       | "getTokenCreator"
       | "getTokenType"
+      | "getTokensByCreator"
       | "ice"
       | "isDeployerRegistered"
       | "isTokenRegistered"
+      | "manualRegisterToken"
+      | "numTokensByCreator"
+      | "numTokensCreated"
       | "owner"
       | "registerToken"
       | "renounceOwnership"
@@ -57,6 +67,7 @@ export interface TokenRegistryInterface extends utils.Interface {
       | "transferOwnership"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "allTokens", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "changeDexRouter", values: [string]): string;
   encodeFunctionData(functionFragment: "changeFeeReceiver", values: [string]): string;
   encodeFunctionData(functionFragment: "changeIceToken", values: [string]): string;
@@ -65,15 +76,20 @@ export interface TokenRegistryInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "getDeployerTokenType", values: [string]): string;
   encodeFunctionData(functionFragment: "getTokenCreator", values: [string]): string;
   encodeFunctionData(functionFragment: "getTokenType", values: [string]): string;
+  encodeFunctionData(functionFragment: "getTokensByCreator", values: [string, BigNumberish]): string;
   encodeFunctionData(functionFragment: "ice", values?: undefined): string;
   encodeFunctionData(functionFragment: "isDeployerRegistered", values: [string]): string;
   encodeFunctionData(functionFragment: "isTokenRegistered", values: [string]): string;
+  encodeFunctionData(functionFragment: "manualRegisterToken", values: [string, string, string]): string;
+  encodeFunctionData(functionFragment: "numTokensByCreator", values: [string]): string;
+  encodeFunctionData(functionFragment: "numTokensCreated", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "registerToken", values: [string, string]): string;
   encodeFunctionData(functionFragment: "renounceOwnership", values?: undefined): string;
   encodeFunctionData(functionFragment: "setTokenDeployer", values: [string, BigNumberish]): string;
   encodeFunctionData(functionFragment: "transferOwnership", values: [string]): string;
 
+  decodeFunctionResult(functionFragment: "allTokens", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "changeDexRouter", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "changeFeeReceiver", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "changeIceToken", data: BytesLike): Result;
@@ -82,9 +98,13 @@ export interface TokenRegistryInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "getDeployerTokenType", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getTokenCreator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getTokenType", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getTokensByCreator", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ice", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isDeployerRegistered", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isTokenRegistered", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "manualRegisterToken", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "numTokensByCreator", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "numTokensCreated", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "registerToken", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "renounceOwnership", data: BytesLike): Result;
@@ -150,6 +170,8 @@ export interface TokenRegistry extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    allTokens(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+
     changeDexRouter(_dexRouter: string, overrides?: Overrides & { from?: string }): Promise<ContractTransaction>;
 
     changeFeeReceiver(_feeReceiver: string, overrides?: Overrides & { from?: string }): Promise<ContractTransaction>;
@@ -166,11 +188,24 @@ export interface TokenRegistry extends BaseContract {
 
     getTokenType(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    getTokensByCreator(arg0: string, arg1: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+
     ice(overrides?: CallOverrides): Promise<[string]>;
 
     isDeployerRegistered(deployer: string, overrides?: CallOverrides): Promise<[boolean] & { isRegistered: boolean }>;
 
     isTokenRegistered(token: string, overrides?: CallOverrides): Promise<[boolean] & { isRegistered: boolean }>;
+
+    manualRegisterToken(
+      token: string,
+      creator: string,
+      deployer: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    numTokensByCreator(creator: string, overrides?: CallOverrides): Promise<[BigNumber] & { numTokens: BigNumber }>;
+
+    numTokensCreated(overrides?: CallOverrides): Promise<[BigNumber] & { numTokens: BigNumber }>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -191,6 +226,8 @@ export interface TokenRegistry extends BaseContract {
     transferOwnership(newOwner: string, overrides?: Overrides & { from?: string }): Promise<ContractTransaction>;
   };
 
+  allTokens(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
   changeDexRouter(_dexRouter: string, overrides?: Overrides & { from?: string }): Promise<ContractTransaction>;
 
   changeFeeReceiver(_feeReceiver: string, overrides?: Overrides & { from?: string }): Promise<ContractTransaction>;
@@ -207,11 +244,24 @@ export interface TokenRegistry extends BaseContract {
 
   getTokenType(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  getTokensByCreator(arg0: string, arg1: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
   ice(overrides?: CallOverrides): Promise<string>;
 
   isDeployerRegistered(deployer: string, overrides?: CallOverrides): Promise<boolean>;
 
   isTokenRegistered(token: string, overrides?: CallOverrides): Promise<boolean>;
+
+  manualRegisterToken(
+    token: string,
+    creator: string,
+    deployer: string,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  numTokensByCreator(creator: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  numTokensCreated(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -232,6 +282,8 @@ export interface TokenRegistry extends BaseContract {
   transferOwnership(newOwner: string, overrides?: Overrides & { from?: string }): Promise<ContractTransaction>;
 
   callStatic: {
+    allTokens(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
     changeDexRouter(_dexRouter: string, overrides?: CallOverrides): Promise<void>;
 
     changeFeeReceiver(_feeReceiver: string, overrides?: CallOverrides): Promise<void>;
@@ -248,11 +300,19 @@ export interface TokenRegistry extends BaseContract {
 
     getTokenType(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    getTokensByCreator(arg0: string, arg1: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
     ice(overrides?: CallOverrides): Promise<string>;
 
     isDeployerRegistered(deployer: string, overrides?: CallOverrides): Promise<boolean>;
 
     isTokenRegistered(token: string, overrides?: CallOverrides): Promise<boolean>;
+
+    manualRegisterToken(token: string, creator: string, deployer: string, overrides?: CallOverrides): Promise<void>;
+
+    numTokensByCreator(creator: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    numTokensCreated(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -287,6 +347,8 @@ export interface TokenRegistry extends BaseContract {
   };
 
   estimateGas: {
+    allTokens(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
     changeDexRouter(_dexRouter: string, overrides?: Overrides & { from?: string }): Promise<BigNumber>;
 
     changeFeeReceiver(_feeReceiver: string, overrides?: Overrides & { from?: string }): Promise<BigNumber>;
@@ -303,11 +365,24 @@ export interface TokenRegistry extends BaseContract {
 
     getTokenType(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    getTokensByCreator(arg0: string, arg1: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
     ice(overrides?: CallOverrides): Promise<BigNumber>;
 
     isDeployerRegistered(deployer: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     isTokenRegistered(token: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    manualRegisterToken(
+      token: string,
+      creator: string,
+      deployer: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    numTokensByCreator(creator: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    numTokensCreated(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -325,6 +400,8 @@ export interface TokenRegistry extends BaseContract {
   };
 
   populateTransaction: {
+    allTokens(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     changeDexRouter(_dexRouter: string, overrides?: Overrides & { from?: string }): Promise<PopulatedTransaction>;
 
     changeFeeReceiver(_feeReceiver: string, overrides?: Overrides & { from?: string }): Promise<PopulatedTransaction>;
@@ -341,11 +418,24 @@ export interface TokenRegistry extends BaseContract {
 
     getTokenType(arg0: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getTokensByCreator(arg0: string, arg1: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     ice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isDeployerRegistered(deployer: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isTokenRegistered(token: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    manualRegisterToken(
+      token: string,
+      creator: string,
+      deployer: string,
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    numTokensByCreator(creator: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    numTokensCreated(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

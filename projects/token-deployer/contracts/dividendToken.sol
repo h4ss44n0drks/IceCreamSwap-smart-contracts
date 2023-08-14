@@ -407,7 +407,7 @@ contract DividendToken is Ownable, IERC20 {
     }
 
     function SetMaxWallet(uint256 _maxWallet) public onlyOwner {
-        require(_maxWallet >= totalSupply() / 1000);
+        require(_maxWallet >= totalSupply() / 1000, "<0.1%");
         maxWallet = _maxWallet;
         emit OnSetMaxWallet(_maxWallet);
     }
@@ -423,7 +423,7 @@ contract DividendToken is Ownable, IERC20 {
     }
 
     function setSwapTreshold(uint256 treshold) public onlyOwner {
-        require(treshold <= TAX_DENOMINATOR / 10);
+        require(treshold <= TAX_DENOMINATOR / 10, ">10%");
 
         _swapTreshold = treshold;
 
@@ -431,7 +431,7 @@ contract DividendToken is Ownable, IERC20 {
     }
 
     function setAMM(address AMM, bool add) external onlyOwner {
-        require(AMM != dexPair && AMM != nativeDexPair);
+        require(AMM != dexPair && AMM != nativeDexPair, "!dexPair");
 
         _isMarketMaker[AMM] = add;
         _isMaxWalletExempt[AMM] = add;
@@ -440,7 +440,7 @@ contract DividendToken is Ownable, IERC20 {
     }
 
     function setMaxWalletExempt(address wallet, bool exempt) external onlyOwner {
-        require(wallet != dexPair && wallet != nativeDexPair);
+        require(wallet != dexPair && wallet != nativeDexPair, "!dexPair");
 
         _isMaxWalletExempt[wallet] = exempt;
 
@@ -461,7 +461,7 @@ contract DividendToken is Ownable, IERC20 {
         require(Sell <= Buy * 2, "sell tax > 2x buy tax");
 
         require(Reflection + Liquidity + Marketing == TAX_DENOMINATOR, "sum(taxes) != TAX_DENOMINATOR");
-        require(Marketing <= TAX_DENOMINATOR / 2, "marketing distribution max 50%");
+        require(Marketing <= TAX_DENOMINATOR / 2, "marketing max 50%");
 
         _buyTax = Buy;
 
@@ -481,7 +481,7 @@ contract DividendToken is Ownable, IERC20 {
     }
 
     function setExcludedFromFee(address account, bool exclude) public onlyOwner {
-        require(exclude || account != address(this));
+        require(account != address(this), "!self");
 
         ExcludedFromFees[account] = exclude;
 
@@ -491,11 +491,10 @@ contract DividendToken is Ownable, IERC20 {
     function setExcludedFromReflection(address account, bool exclude) public onlyOwner {
         //Contract and PancakePair never can receive reflections
 
-        require(account != address(this) && account != dexPair && account != nativeDexPair);
-
-        //Burn wallet always receives reflections
-
-        require(account != address(0xdead));
+        require(
+            account != address(this) && account != dexPair && account != nativeDexPair && account != address(0xdead),
+            "can not exclude address"
+        );
 
         _excludeFromReflection(account, exclude);
 
@@ -503,7 +502,7 @@ contract DividendToken is Ownable, IERC20 {
     }
 
     function _excludeFromReflection(address account, bool exclude) private {
-        require(ExcludedFromReflection[account] != exclude);
+        require(ExcludedFromReflection[account] != exclude, "already set");
 
         uint256 tokens = balanceOf(account);
 
@@ -595,7 +594,7 @@ contract DividendToken is Ownable, IERC20 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     function RescueTokens(address token) public onlyOwner {
-        require(token != address(this) && token != dexPair && token != nativeDexPair);
+        require(token != address(this) && token != dexPair && token != nativeDexPair, "no draining");
 
         IERC20(token).transfer(msg.sender, IERC20(token).balanceOf(address(this)));
     }
@@ -637,9 +636,7 @@ contract DividendToken is Ownable, IERC20 {
         address spender,
         uint256 amount
     ) private {
-        require(owner != address(0));
-
-        require(spender != address(0));
+        require(owner != address(0) && spender != address(0), "!zero address");
 
         _allowances[owner][spender] = amount;
 
@@ -678,7 +675,7 @@ contract DividendToken is Ownable, IERC20 {
     function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
         uint256 currentAllowance = _allowances[msg.sender][spender];
 
-        require(currentAllowance >= subtractedValue);
+        require(currentAllowance >= subtractedValue, "exceeds allowance");
 
         _approve(msg.sender, spender, currentAllowance - subtractedValue);
 
