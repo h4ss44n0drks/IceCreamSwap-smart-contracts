@@ -2,10 +2,11 @@
 
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts@4.3.2/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts@4.3.2/access/Ownable.sol";
 import "./interfaces/IIceCreamSwapFactory.sol";
 import "./interfaces/IIceCreamSwapRouter.sol";
+import "./swapHelper.sol";
 
 contract DividendToken is Ownable, IERC20 {
     //shares represent the token someone with reflections turned on has.
@@ -77,6 +78,7 @@ contract DividendToken is Ownable, IERC20 {
 
     IERC20 private pairedToken;
     IIceCreamSwapRouter private dexRouter;
+    SwapHelper private swapHelper;
 
     event onSetManualSwap(bool manual);
 
@@ -136,11 +138,14 @@ contract DividendToken is Ownable, IERC20 {
         dexPair = IIceCreamSwapFactory(_dexRouter.factory()).createPair(address(this), address(_pairedToken));
         nativeDexPair = IIceCreamSwapFactory(_dexRouter.factory()).createPair(address(this), _dexRouter.WETH());
 
+        swapHelper = new SwapHelper(_dexRouter);
+
         _isMarketMaker[dexPair] = true;
         _isMarketMaker[nativeDexPair] = true;
 
         _isMaxWalletExempt[dexPair] = true;
         _isMaxWalletExempt[nativeDexPair] = true;
+        _isMaxWalletExempt[address(swapHelper)] = true;
 
         //Pancake pair and contract never get reflections and can't be included
         _excludeFromReflection(address(this), true);
@@ -150,6 +155,7 @@ contract DividendToken is Ownable, IERC20 {
         //Contract never pays fees and can't be included
         ExcludedFromFees[owner] = true;
         ExcludedFromFees[address(this)] = true;
+        ExcludedFromFees[address(swapHelper)] = true;
 
         //marketing wallet is by default the owner
         marketingWallet = owner;
@@ -159,6 +165,7 @@ contract DividendToken is Ownable, IERC20 {
 
         // approve the dex router for this token and pairedToken
         _allowances[address(this)][address(dexRouter)] = type(uint256).max;
+        _allowances[address(this)][address(swapHelper)] = type(uint256).max;
         pairedToken.approve(address(dexRouter), type(uint256).max);
 
         // mint initial supply and send to owner
@@ -350,7 +357,7 @@ contract DividendToken is Ownable, IERC20 {
 
         if (swapToken == 0) return;
 
-        _swapTokenForPaired(swapToken, nativeBigger);
+        swapHelper.swapToken(swapToken, nativeBigger, address(pairedToken));
 
         uint256 newPairedToken = pairedToken.balanceOf(address(this));
 
@@ -361,22 +368,6 @@ contract DividendToken is Ownable, IERC20 {
         if (liqPairedToken > 0) _addLiquidity(liqToken, liqPairedToken);
 
         pairedToken.transfer(marketingWallet, pairedToken.balanceOf(address(this)));
-    }
-
-    function _swapTokenForPaired(uint256 tokens, bool viaNative) private {
-        address[] memory path;
-        if (viaNative) {
-            path = new address[](2);
-            path[0] = address(this);
-            path[1] = address(pairedToken);
-        } else {
-            path = new address[](3);
-            path[0] = address(this);
-            path[1] = dexRouter.WETH();
-            path[2] = address(pairedToken);
-        }
-
-        dexRouter.swapExactTokensForTokens(tokens, 0, path, address(this), block.timestamp);
     }
 
     function _addLiquidity(uint256 tokenAmount, uint256 pairedTokenAmount) private {
