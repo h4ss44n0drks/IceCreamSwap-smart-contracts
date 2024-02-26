@@ -1,4 +1,4 @@
-import { Contract, ContractFactory, utils, BigNumber } from "ethers";
+import { Contract } from "ethers";
 import { run } from "hardhat";
 
 export async function tryVerify(contract: Contract, constructorArguments: any[] = [], libraries: any = {}) {

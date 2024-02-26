@@ -1,5 +1,5 @@
 import type { HardhatUserConfig } from "hardhat/types";
-import "@nomiclabs/hardhat-ethers";
+import "@nomicfoundation/hardhat-ethers";
 import { networks } from "networks";
 
 const config: HardhatUserConfig = {
