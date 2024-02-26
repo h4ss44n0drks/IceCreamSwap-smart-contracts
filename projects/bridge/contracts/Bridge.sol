@@ -385,7 +385,6 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         bytes32 resourceID,
         bytes calldata data
     ) external onlyRelayers whenNotPaused {
-        address handler = _resourceIDToHandlerAddress[resourceID];
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(domainID);
         bytes32 dataHash = keccak256(abi.encodePacked(resourceID, data));
         Proposal memory proposal = _proposals[nonceAndID][dataHash];
