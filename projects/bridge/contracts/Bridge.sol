@@ -395,8 +395,7 @@ contract Bridge is Pausable, AccessControl {
     ) external onlyRelayers whenNotPaused {
         address handler = _resourceIDToHandlerAddress[resourceID];
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(domainID);
-        // todo: use resourceID instead of handler as many resources use the same handler, but hash needs to be unique
-        bytes32 dataHash = keccak256(abi.encodePacked(handler, data));
+        bytes32 dataHash = keccak256(abi.encodePacked(resourceID, data));
         Proposal memory proposal = _proposals[nonceAndID][dataHash];
 
         require(_resourceIDToHandlerAddress[resourceID] != address(0), "no handler for resourceID");
@@ -499,7 +498,7 @@ contract Bridge is Pausable, AccessControl {
     ) public onlyRelayers whenNotPaused {
         address handler = _resourceIDToHandlerAddress[resourceID];
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(domainID);
-        bytes32 dataHash = keccak256(abi.encodePacked(handler, data));
+        bytes32 dataHash = keccak256(abi.encodePacked(resourceID, data));
         Proposal storage proposal = _proposals[nonceAndID][dataHash];
 
         require(proposal._status == ProposalStatus.Passed, "Proposal must have Passed status");
