@@ -1,5 +1,5 @@
 import { ethers, network } from "hardhat";
-import { chainConfigs } from "common";
+import { chainConfigs, farmConfig } from "common";
 import { writeFileSync } from "fs";
 
 async function main() {
@@ -9,12 +9,14 @@ async function main() {
     throw new Error(`No config found for network ${networkName}`);
   }
 
-  const Multicall = await ethers.getContractFactory("Multicall3");
-  const multicall = await Multicall.deploy();
-  console.log(`Multicall deployed to ${multicall.target}`);
+  const Farm = await ethers.getContractFactory("IceCreamFarm");
+  const farm = await Farm.deploy(config.ice, 0, farmConfig.iceTreasury);
+  console.log(`Farm deployed to ${farm.target}`);
+
+  await farm.transferOwnership(farmConfig.farmAdmin);
 
   const contracts = {
-    multicall: multicall.target,
+    farm: farm.target,
   };
   writeFileSync(`./deployments/${networkName}.json`, JSON.stringify(contracts, null, 2));
 }

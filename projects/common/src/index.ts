@@ -1,2 +1,2 @@
-export { chainConfigs, bridgeConfig } from "./config";
+export * from "./config";
 export { tryVerify, verifyContract } from "./verify";

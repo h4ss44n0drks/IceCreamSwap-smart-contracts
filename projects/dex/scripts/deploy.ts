@@ -1,5 +1,5 @@
 import { ethers, network } from "hardhat";
-import { chainConfigs } from "common";
+import { chainConfigs, dexConfig } from "common";
 import { writeFileSync } from "fs";
 
 async function main() {
@@ -9,12 +9,17 @@ async function main() {
     throw new Error(`No config found for network ${networkName}`);
   }
 
-  const Multicall = await ethers.getContractFactory("Multicall3");
-  const multicall = await Multicall.deploy();
-  console.log(`Multicall deployed to ${multicall.target}`);
+  const Factory = await ethers.getContractFactory("UniswapV2Factory");
+  const factory = await Factory.deploy(dexConfig.dexAdmin);
+  console.log(`Factory deployed to ${factory.target}`);
+
+  const Router = await ethers.getContractFactory("UniswapV2Router02");
+  const router = await Router.deploy(factory.target, config.weth);
+  console.log(`Router deployed to ${router.target}`);
 
   const contracts = {
-    multicall: multicall.target,
+    factory: factory.target,
+    router: router.target,
   };
   writeFileSync(`./deployments/${networkName}.json`, JSON.stringify(contracts, null, 2));
 }

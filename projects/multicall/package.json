@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "compile": "npx hardhat compile"
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.ts"
   }
 }
