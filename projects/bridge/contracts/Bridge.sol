@@ -15,7 +15,7 @@ import "./interfaces/IGenericHandler.sol";
     @title Facilitates deposits, creation and voting of deposit proposals, and deposit executions.
     @author ChainSafe Systems.
  */
-contract Bridge is Pausable, AccessControl {
+contract IceCreamSwapBridge is Pausable, AccessControl {
     using SafeCast for *;
 
     // Limit relayers number because proposal can fit only so much votes

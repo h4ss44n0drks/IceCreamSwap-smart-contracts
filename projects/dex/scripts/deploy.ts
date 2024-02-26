@@ -9,11 +9,12 @@ async function main() {
     throw new Error(`No config found for network ${networkName}`);
   }
 
-  const Factory = await ethers.getContractFactory("UniswapV2Factory");
+  const Factory = await ethers.getContractFactory("IceCreamSwapV2Factory");
   const factory = await Factory.deploy(dexConfig.dexAdmin);
   console.log(`Factory deployed to ${factory.target}`);
+  console.log(await factory.INIT_CODE_HASH());
 
-  const Router = await ethers.getContractFactory("UniswapV2Router02");
+  const Router = await ethers.getContractFactory("IceCreamSwapV2Router");
   const router = await Router.deploy(factory.target, config.weth);
   console.log(`Router deployed to ${router.target}`);
 

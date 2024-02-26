@@ -9,7 +9,7 @@ import "./libraries/SafeMath.sol";
 import "./interfaces/IERC20.sol";
 import "./interfaces/IWETH.sol";
 
-contract UniswapV2Router02 is IUniswapV2Router02 {
+contract IceCreamSwapV2Router is IUniswapV2Router02 {
     using SafeMath for uint256;
 
     address public immutable override factory;
