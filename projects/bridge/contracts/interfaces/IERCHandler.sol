@@ -14,22 +14,10 @@ interface IERCHandler {
     function setResource(bytes32 resourceID, address contractAddress) external;
 
     /**
-        @notice Marks {contractAddress} as mintable/burnable.
-        @param contractAddress Address of contract to be used when making or executing deposits.
+        @notice stops resourceID from being handled by this handler.
+        @param resourceID ResourceID that was used when making deposits.
      */
-    function setBurnable(address contractAddress) external;
-
-    /**
-        @notice Withdraw funds from ERC safes.
-        @param data ABI-encoded withdrawal params relevant to the handler.
-     */
-    function withdraw(bytes memory data) external;
-
-    /**
-        @notice changed bridge address.
-        @param newBridgeAddress address of new bridge.
-     */
-    function changeBridgeAddress(address newBridgeAddress) external;
+    function removeResource(bytes32 resourceID) external;
 
     /**
         @notice calculate handler fees for deposit.
@@ -44,10 +32,4 @@ interface IERCHandler {
         uint8 destinationDomainID,
         bytes calldata data
     ) external view returns (address feeToken, uint256 fee);
-
-    /**
-        @notice Changes fee for handler.
-        @param feeData ABI-encoded fee params relevant to the handler.
-     */
-    function changeFee(bytes memory feeData) external;
 }

@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./utils/AccessControl.sol";
 import "./utils/Pausable.sol";
-import "./utils/SafeMath.sol";
 import "./utils/SafeCast.sol";
 import "./interfaces/IDepositExecute.sol";
 import "./interfaces/IERCHandler.sol";
@@ -16,7 +15,7 @@ import "./interfaces/IGenericHandler.sol";
     @title Facilitates deposits, creation and voting of deposit proposals, and deposit executions.
     @author ChainSafe Systems.
  */
-contract Bridge is Pausable, AccessControl, SafeMath {
+contract Bridge is Pausable, AccessControl {
     using SafeCast for *;
 
     // Limit relayers number because proposal can fit only so much votes
@@ -49,6 +48,13 @@ contract Bridge is Pausable, AccessControl, SafeMath {
     mapping(address => bool) public isValidForwarder;
     // destinationDomainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => Proposal)) private _proposals;
+
+    // default fee in native tokens to do a bridging
+    uint256 public _bridgeFee;
+    // destinationDomainID => fee multiplier. 1_000 = 1x, defaults to 1x
+    mapping(uint8 => uint256) public chainFeeMultipliers;
+    // resourceID => fee multiplier. 1_000 = 1x, defaults to 1x
+    mapping(bytes32 => uint256) public resourceFeeMultipliers;
 
     event RelayerThresholdChanged(uint256 newThreshold);
     event RelayerAdded(address relayer);
@@ -96,7 +102,8 @@ contract Bridge is Pausable, AccessControl, SafeMath {
     }
 
     function _relayerBit(address relayer) private view returns (uint256) {
-        return uint256(1) << sub(AccessControl.getRoleMemberIndex(RELAYER_ROLE, relayer), 1);
+        require(AccessControl.hasRole(RELAYER_ROLE, relayer), "!relayer");
+        return uint256(1) << (AccessControl.getRoleMemberIndex(RELAYER_ROLE, relayer) - 1);
     }
 
     function _hasVoted(Proposal memory proposal, address relayer) private view returns (bool) {
@@ -124,11 +131,13 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         uint8 domainID,
         address[] memory initialRelayers,
         uint256 initialRelayerThreshold,
-        uint256 expiry
+        uint256 expiry,
+        uint256 bridgeFee
     ) {
         _domainID = domainID;
         _relayerThreshold = initialRelayerThreshold.toUint8();
         _expiry = expiry.toUint40();
+        _bridgeFee = bridgeFee;
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
@@ -242,8 +251,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         address tokenAddress
     ) external onlyAdmin {
         _resourceIDToHandlerAddress[resourceID] = handlerAddress;
-        IERCHandler handler = IERCHandler(handlerAddress);
-        handler.setResource(resourceID, tokenAddress);
+        IERCHandler(handlerAddress).setResource(resourceID, tokenAddress);
     }
 
     /**
@@ -263,8 +271,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         bytes4 executeFunctionSig
     ) external onlyAdmin {
         _resourceIDToHandlerAddress[resourceID] = handlerAddress;
-        IGenericHandler handler = IGenericHandler(handlerAddress);
-        handler.setResource(
+        IGenericHandler(handlerAddress).setResource(
             resourceID,
             contractAddress,
             depositFunctionSig,
@@ -274,14 +281,14 @@ contract Bridge is Pausable, AccessControl, SafeMath {
     }
 
     /**
-        @notice Sets a resource as burnable for handler contracts that use the IERCHandler interface.
+        @notice Removes a resource for Bridge and handler contract
         @notice Only callable by an address that currently has the admin role.
-        @param handlerAddress Address of handler resource will be set for.
-        @param tokenAddress Address of contract to be called when a deposit is made and a deposited is executed.
+        @param resourceID ResourceID to be used when making deposits.
      */
-    function adminSetBurnable(address handlerAddress, address tokenAddress) external onlyAdmin {
-        IERCHandler handler = IERCHandler(handlerAddress);
-        handler.setBurnable(tokenAddress);
+    function adminRemoveResource(bytes32 resourceID) external onlyAdmin {
+        address handlerAddress = _resourceIDToHandlerAddress[resourceID];
+        _resourceIDToHandlerAddress[resourceID] = address(0);
+        IERCHandler(handlerAddress).removeResource(resourceID);
     }
 
     /**
@@ -303,17 +310,6 @@ contract Bridge is Pausable, AccessControl, SafeMath {
      */
     function adminSetForwarder(address forwarder, bool valid) external onlyAdmin {
         isValidForwarder[forwarder] = valid;
-    }
-
-    /**
-        @notice sets bridge for handler to new bridge contract.
-        @notice Only callable by an address that currently has the admin role.
-        @param handlerAddress address of handler to change bridge for.
-        @param newBridgeAddress address of new bridge to transfer handler to.
-     */
-    function adminMigrateHandler(address handlerAddress, address newBridgeAddress) external onlyAdmin {
-        IERCHandler handler = IERCHandler(handlerAddress);
-        handler.changeBridgeAddress(newBridgeAddress);
     }
 
     /**
@@ -345,27 +341,6 @@ contract Bridge is Pausable, AccessControl, SafeMath {
     }
 
     /**
-        @notice Changes fee for handler.
-        @notice Only callable by admin.
-        @param handlerAddress address of the handler to change fees of.
-        @param feeData ABI encoded fee data specific to the handler contract
-     */
-    function adminChangeFee(address handlerAddress, bytes memory feeData) external onlyAdmin {
-        IERCHandler handler = IERCHandler(handlerAddress);
-        handler.changeFee(feeData);
-    }
-
-    /**
-        @notice Used to manually withdraw funds from ERC safes.
-        @param handlerAddress Address of handler to withdraw from.
-        @param data ABI-encoded withdrawal params relevant to the specified handler.
-     */
-    function adminWithdraw(address handlerAddress, bytes memory data) external onlyAdmin {
-        IERCHandler handler = IERCHandler(handlerAddress);
-        handler.withdraw(data);
-    }
-
-    /**
         @notice Initiates a transfer using a specified handler contract.
         @notice Only callable when Bridge is not paused.
         @param destinationDomainID ID of chain deposit will be bridged to.
@@ -384,11 +359,14 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         address handler = _resourceIDToHandlerAddress[resourceID];
         require(handler != address(0), "resourceID not mapped to handler");
 
+        uint256 bridgeFee = calculateBridgeFee(destinationDomainID, resourceID, data);
+        require(msg.value >= bridgeFee);
+
         uint64 depositNonce = ++_depositCounts[destinationDomainID];
         address sender = _msgSender();
 
         IDepositExecute depositHandler = IDepositExecute(handler);
-        bytes memory handlerResponse = depositHandler.deposit{value: msg.value}(
+        bytes memory handlerResponse = depositHandler.deposit{value: msg.value - bridgeFee}(
             resourceID,
             sender,
             destinationDomainID,
@@ -396,26 +374,6 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         );
 
         emit Deposit(destinationDomainID, resourceID, depositNonce, sender, data, handlerResponse);
-    }
-
-    /**
-        @notice Calculates the fees for a deposit with the same arguments.
-        @param destinationDomainID ID of chain deposit will be bridged to.
-        @param resourceID ResourceID used to find address of handler to be used for deposit.
-        @param data Additional data to be passed to specified handler.
-     */
-    function calculateFee(
-        uint8 destinationDomainID,
-        bytes32 resourceID,
-        bytes calldata data
-    ) external view returns (address feeToken, uint256 fee) {
-        address handler = _resourceIDToHandlerAddress[resourceID];
-        require(handler != address(0), "resourceID not mapped to handler");
-
-        address sender = _msgSender();
-
-        IERCHandler depositHandler = IERCHandler(handler);
-        (feeToken, fee) = depositHandler.calculateFee(resourceID, sender, destinationDomainID, data);
     }
 
     /**
@@ -437,6 +395,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
     ) external onlyRelayers whenNotPaused {
         address handler = _resourceIDToHandlerAddress[resourceID];
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(domainID);
+        // todo: use resourceID instead of handler as many resources use the same handler, but hash needs to be unique
         bytes32 dataHash = keccak256(abi.encodePacked(handler, data));
         Proposal memory proposal = _proposals[nonceAndID][dataHash];
 
@@ -461,7 +420,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
             });
 
             emit ProposalEvent(domainID, depositNonce, ProposalStatus.Active, dataHash);
-        } else if (uint40(sub(block.number, proposal._proposedBlock)) > _expiry) {
+        } else if (uint40(block.number - proposal._proposedBlock) > _expiry) {
             // if the number of blocks that has passed since this proposal was
             // submitted exceeds the expiry threshold set, cancel the proposal
             proposal._status = ProposalStatus.Cancelled;
@@ -471,7 +430,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
 
         if (proposal._status != ProposalStatus.Cancelled) {
             proposal._yesVotes = (proposal._yesVotes | _relayerBit(sender)).toUint200();
-            proposal._yesVotesTotal++; // TODO: check if bit counting is cheaper.
+            proposal._yesVotesTotal++;
 
             emit ProposalVote(domainID, depositNonce, proposal._status, dataHash);
 
@@ -510,7 +469,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
             currentStatus == ProposalStatus.Active || currentStatus == ProposalStatus.Passed,
             "Proposal cannot be cancelled"
         );
-        require(uint40(sub(block.number, proposal._proposedBlock)) > _expiry, "Proposal not at expiry threshold");
+        require(uint40(block.number - proposal._proposedBlock) > _expiry, "Proposal not at expiry threshold");
 
         proposal._status = ProposalStatus.Cancelled;
         _proposals[nonceAndID][dataHash] = proposal;
@@ -562,25 +521,86 @@ contract Bridge is Pausable, AccessControl, SafeMath {
     }
 
     /**
-        @notice Transfers eth or tokens in the contract to the specified addresses. The parameters tokens, receivers and amounts are mapped 1-1.
-        This means that the address at index 0 for receivers will receive the amount (in WEI) from amounts at index 0 of token tokens[0] or ETH.
-        @param tokens Array of token addresses or zero address for ether.
-        @param receivers Array of addresses to transfer {amounts} to.
-        @param amounts Array of amonuts to transfer to {addrs}.
+        @notice Calculates the Handler fees for a deposit with the same arguments.
+        @param destinationDomainID ID of chain deposit will be bridged to.
+        @param resourceID ResourceID used to find address of handler to be used for deposit.
+        @param data Additional data to be passed to specified handler.
      */
-    function transferTokens(
-        address[] calldata tokens,
-        address[] calldata receivers,
-        uint256[] calldata amounts
+    function calculateHandlerFee(
+        uint8 destinationDomainID,
+        bytes32 resourceID,
+        bytes calldata data
+    ) external view returns (address feeToken, uint256 fee) {
+        address handler = _resourceIDToHandlerAddress[resourceID];
+        require(handler != address(0), "resourceID not mapped to handler");
+
+        address sender = _msgSender();
+
+        IERCHandler depositHandler = IERCHandler(handler);
+        (feeToken, fee) = depositHandler.calculateFee(resourceID, sender, destinationDomainID, data);
+    }
+
+    /**
+        @notice Calculates the Bridge fees for a deposit with the same arguments.
+        @param destinationDomainID ID of chain deposit will be bridged to.
+        @param resourceID ResourceID used to find address of handler to be used for deposit.
+        @notice parameter data not used, but Additional data to be passed to specified handler.
+     */
+    function calculateBridgeFee(
+        uint8 destinationDomainID,
+        bytes32 resourceID,
+        bytes calldata // data
+    ) public view returns (uint256 fee) {
+        fee = _bridgeFee;
+        if (chainFeeMultipliers[destinationDomainID] != 0) {
+            fee = (fee * chainFeeMultipliers[destinationDomainID]) / 1_000;
+        }
+        if (resourceFeeMultipliers[resourceID] != 0) {
+            fee = (fee * resourceFeeMultipliers[resourceID]) / 1_000;
+        }
+    }
+
+    /**
+        @notice Sets the fixed Bridge fee
+        @param bridgeFee fee amount in wei of native token
+     */
+    function setBridgeFee(uint256 bridgeFee) external onlyAdmin {
+        _bridgeFee = bridgeFee;
+    }
+
+    /**
+        @notice add a fee multiplier for a chain.
+        @param domainId domain ID of the chain to set the multiplier for
+        @param feeMultiplier multiplier for this chain, 1_000 = 1x and 0 defaults to 1x
+     */
+    function setFeeMultiplierChain(uint8 domainId, uint256 feeMultiplier) external onlyAdmin {
+        chainFeeMultipliers[domainId] = feeMultiplier;
+    }
+
+    /**
+        @notice add a fee multiplier for a resource.
+        @param resourceId resource ID of the token or other resource to set the multiplier for
+        @param feeMultiplier multiplier for this resource, 1_000 = 1x and 0 defaults to 1x
+     */
+    function setFeeMultiplierResource(bytes32 resourceId, uint256 feeMultiplier) external onlyAdmin {
+        resourceFeeMultipliers[resourceId] = feeMultiplier;
+    }
+
+    /**
+        @notice allows the admin to withdraw accumulated fees and tokens sent to this contract.
+        @param tokenAddress address of the token to withdraw
+        @param recipient recipient which should receive the withdrawn token
+        @param amount how many tokens should be withdrawn
+     */
+    function withdraw(
+        address tokenAddress,
+        address recipient,
+        uint256 amount
     ) external onlyAdmin {
-        require(tokens.length == receivers.length && tokens.length == amounts.length, "arg length mismatch");
-        for (uint256 i = 0; i < tokens.length; i++) {
-            address token = tokens[i];
-            if (token == address(0)) {
-                payable(receivers[i]).transfer(amounts[i]);
-            } else {
-                IERC20(token).transfer(receivers[i], amounts[i]);
-            }
+        if (tokenAddress == address(0)) {
+            payable(recipient).transfer(amount);
+        } else {
+            IERC20(tokenAddress).transfer(recipient, amount);
         }
     }
 }

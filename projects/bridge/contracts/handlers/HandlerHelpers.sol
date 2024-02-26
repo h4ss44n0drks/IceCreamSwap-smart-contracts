@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import "../interfaces/IERCHandler.sol";
+import "../interfaces/IAccessControl.sol";
 
 /**
     @title Function used across handler contracts.
@@ -20,11 +23,13 @@ abstract contract HandlerHelpers is IERCHandler {
     // token contract address => is whitelisted
     mapping(address => bool) public _contractWhitelist;
 
-    // token contract address => is burnable
-    mapping(address => bool) public _burnList;
-
     modifier onlyBridge() {
         _onlyBridge();
+        _;
+    }
+
+    modifier onlyBridgeAdmin() {
+        _onlyBridgeAdmin();
         _;
     }
 
@@ -35,12 +40,14 @@ abstract contract HandlerHelpers is IERCHandler {
         _bridgeAddress = bridgeAddress;
     }
 
-    function changeBridgeAddress(address newBridgeAddress) external override onlyBridge {
-        _bridgeAddress = newBridgeAddress;
+    function _onlyBridge() private view {
+        require(msg.sender == _bridgeAddress, "!Bridge");
     }
 
-    function _onlyBridge() private view {
-        require(msg.sender == _bridgeAddress, "sender must be bridge contract");
+    function _onlyBridgeAdmin() private view {
+        IAccessControl bridge = IAccessControl(_bridgeAddress);
+        bool isBridgeAdmin = bridge.hasRole(bridge.DEFAULT_ADMIN_ROLE(), msg.sender);
+        require(isBridgeAdmin, "!Bridge admin");
     }
 
     /**
@@ -55,12 +62,24 @@ abstract contract HandlerHelpers is IERCHandler {
     }
 
     /**
-        @notice First verifies {contractAddress} is whitelisted, then sets {_burnList}[{contractAddress}]
-        to true.
-        @param contractAddress Address of contract to be used when making or executing deposits.
+        @notice stops resourceID from being handled by this handler.
+        @param resourceID ResourceID that was used when making deposits.
      */
-    function setBurnable(address contractAddress) external override onlyBridge {
-        _setBurnable(contractAddress);
+    function removeResource(bytes32 resourceID) external override onlyBridge {
+        _removeResource(resourceID);
+    }
+
+    function withdraw(
+        address tokenAddress,
+        address recipient,
+        uint256 amount
+    ) external onlyBridgeAdmin {
+        if (tokenAddress == address(0)) {
+            payable(recipient).transfer(amount);
+        } else {
+            // no need to use safeTransfer as this method is only used directly from admin
+            IERC20(tokenAddress).transfer(recipient, amount);
+        }
     }
 
     function _setResource(bytes32 resourceID, address contractAddress) internal virtual {
@@ -70,8 +89,12 @@ abstract contract HandlerHelpers is IERCHandler {
         _contractWhitelist[contractAddress] = true;
     }
 
-    function _setBurnable(address contractAddress) internal virtual {
-        require(_contractWhitelist[contractAddress], "provided contract is not whitelisted");
-        _burnList[contractAddress] = true;
+    function _removeResource(bytes32 resourceID) internal virtual {
+        address contractAddress = _resourceIDToTokenContractAddress[resourceID];
+        require(contractAddress != address(0), "not set");
+        _resourceIDToTokenContractAddress[resourceID] = address(0);
+        _tokenContractAddressToResourceID[contractAddress] = bytes32(0);
+
+        _contractWhitelist[contractAddress] = false;
     }
 }

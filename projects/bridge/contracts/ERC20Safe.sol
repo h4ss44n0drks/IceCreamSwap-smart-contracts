@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "./interfaces/IERC20MintableBurnable.sol";
 
 /**
     @title Manages deposited ERC20s.
@@ -12,25 +10,21 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
     @notice This contract is intended to be used with ERC20Handler contract.
  */
 contract ERC20Safe {
-    using SafeMath for uint256;
-
     /**
         @notice Used to gain custody of deposited token.
         @param tokenAddress Address of ERC20 to transfer.
         @param owner Address of current token owner.
-        @param recipient Address to transfer tokens to.
         @param amount Amount of tokens to transfer.
      */
     function lockERC20(
         address tokenAddress,
         address owner,
-        address recipient,
         uint256 amount
-    ) internal {
+    ) internal returns (uint256 amountReceived) {
         IERC20 erc20 = IERC20(tokenAddress);
         uint256 balanceBefore = erc20.balanceOf(address(this));
-        safeTransferFrom(erc20, owner, recipient, amount);
-        require(erc20.balanceOf(address(this)).sub(balanceBefore) == amount, "TransferFee Forbidden");
+        safeTransferFrom(erc20, owner, address(this), amount);
+        amountReceived = erc20.balanceOf(address(this)) - balanceBefore;
     }
 
     /**
@@ -59,12 +53,13 @@ contract ERC20Safe {
         address recipient,
         uint256 amount
     ) internal {
-        ERC20PresetMinterPauser erc20 = ERC20PresetMinterPauser(tokenAddress);
+        IERC20MintableBurnable erc20 = IERC20MintableBurnable(tokenAddress);
         erc20.mint(recipient, amount);
     }
 
     /**
         @notice Used to burn ERC20s.
+        @notice Does so by first using transferFrom and then burn as not all contracts implement burnFrom.
         @param tokenAddress Address of ERC20 to burn.
         @param owner Current owner of tokens.
         @param amount Amount of tokens to burn.
@@ -73,26 +68,11 @@ contract ERC20Safe {
         address tokenAddress,
         address owner,
         uint256 amount
-    ) internal virtual {
-        ERC20Burnable erc20 = ERC20Burnable(tokenAddress);
-        erc20.burnFrom(owner, amount);
-    }
-
-    /**
-        @notice Used to burn ERC20s.
-        @param tokenAddress Address of ERC20 to burn.
-        @param owner Current owner of tokens.
-        @param amount Amount of tokens to burn.
-     */
-    function burnERC20indirect(
-        address tokenAddress,
-        address owner,
-        uint256 amount
     ) internal {
-        ERC20Burnable erc20 = ERC20Burnable(tokenAddress);
+        IERC20MintableBurnable erc20 = IERC20MintableBurnable(tokenAddress);
         uint256 balanceBefore = erc20.balanceOf(address(this));
         safeTransferFrom(erc20, owner, address(this), amount);
-        erc20.burn(erc20.balanceOf(address(this)).sub(balanceBefore));
+        erc20.burn(erc20.balanceOf(address(this)) - balanceBefore);
     }
 
     /**
