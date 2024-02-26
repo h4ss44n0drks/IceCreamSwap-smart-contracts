@@ -1,21 +1,24 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
+import { chainConfigs, bridgeConfig } from "common";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const networkName = network.name;
+  const config = chainConfigs[networkName as keyof typeof chainConfigs];
+  if (!config) {
+    throw new Error(`No config found for network ${networkName}`);
+  }
 
-  const lockedAmount = ethers.utils.parseEther("0.001");
+  const bridge = await ethers.deployContract("Bridge", [
+    config.bridgeDomainId,
+    bridgeConfig.relayers,
+    1,
+    1_000,
+    config.oneDollarInNative,
+  ]);
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  await bridge.waitForDeployment();
 
-  await lock.deployed();
-
-  console.log(
-    `Lock with ${ethers.utils.formatEther(lockedAmount)}ETH and unlock timestamp ${unlockTime} deployed to ${
-      lock.address
-    }`
-  );
+  console.log(`Bridge deployed to ${bridge.target}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

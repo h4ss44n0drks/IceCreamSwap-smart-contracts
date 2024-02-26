@@ -35,7 +35,7 @@ contract SmartChefFactory is Ownable {
         require(_stakedToken.totalSupply() >= 0);
         require(_rewardToken.totalSupply() >= 0);
         require(_startBlock >= block.number);
-        require(_startBlock <= _bonusEndBlock.number);
+        require(_startBlock <= _bonusEndBlock);
         require(_rewardPerBlock != 0);
 
         bytes memory bytecode = type(SmartChefInitializable).creationCode;

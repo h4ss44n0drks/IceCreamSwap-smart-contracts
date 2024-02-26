@@ -1,28 +1,18 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@typechain/hardhat";
-import "hardhat-abi-exporter";
+import "@nomiclabs/hardhat-ethers";
+import { networks } from "networks";
 
 const config: HardhatUserConfig = {
+  defaultNetwork: "hardhat",
+  networks,
   solidity: {
-    compilers: [
-      {
-        version: "0.8.17",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 30000,
-          },
-        },
+    version: "0.8.17",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 99999,
       },
-    ],
-  },
-  typechain: {
-    outDir: "typechain",
-    target: "ethers-v5",
-  },
-  abiExporter: {
-    runOnCompile: true,
-    clear: true,
+    },
   },
 };
 

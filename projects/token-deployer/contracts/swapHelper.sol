@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts@4.3.2/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IIceCreamSwapRouter.sol";
 
 contract SwapHelper {

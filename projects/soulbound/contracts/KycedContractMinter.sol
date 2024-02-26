@@ -41,7 +41,7 @@ contract KycedContractMinter is Ownable {
         uint256 _feeAmount,
         address _feeReceiver
     ) external onlyOwner {
-        require(feeToken != address(0));
+        require(address(feeToken) != address(0));
         feeToken = _feeToken;
         feeAmount = _feeAmount;
         feeReceiver = _feeReceiver;
