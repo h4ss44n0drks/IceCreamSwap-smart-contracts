@@ -69,7 +69,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         pancakeProfile.address,
         false,
         0,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];
@@ -105,7 +105,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         pancakeProfile.address,
         true,
         0,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];
@@ -125,7 +125,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         });
         await expectRevert(
           smartChef.deposit(parseEther("100"), { from: thisUser }),
-          "Deposit: Must have an active profile"
+          "Deposit: Must have an active profile",
         );
         i++;
       }
@@ -143,7 +143,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         pancakeProfile.address,
         true,
         0,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];
@@ -184,7 +184,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         pancakeProfile.address,
         true,
         1000,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];
@@ -209,7 +209,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
 
         await expectRevert(
           smartChef.deposit(parseEther("100"), { from: thisUser }),
-          "Deposit: User is not get enough user points"
+          "Deposit: User is not get enough user points",
         );
         i++;
       }
@@ -227,7 +227,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         pancakeProfile.address,
         true,
         1000,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];
@@ -268,7 +268,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         pancakeProfile.address,
         true,
         1000,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];
@@ -288,7 +288,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         });
         await expectRevert(
           smartChef.deposit(parseEther("1"), { from: thisUser }),
-          "Deposit: Must have an active profile"
+          "Deposit: Must have an active profile",
         );
         i++;
       }
@@ -301,7 +301,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         });
         await expectRevert(
           smartChef.deposit(parseEther("1"), { from: thisUser }),
-          "Deposit: Must have an active profile"
+          "Deposit: Must have an active profile",
         );
         i++;
       }

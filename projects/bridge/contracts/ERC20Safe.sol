@@ -16,11 +16,7 @@ contract ERC20Safe {
         @param owner Address of current token owner.
         @param amount Amount of tokens to transfer.
      */
-    function lockERC20(
-        address tokenAddress,
-        address owner,
-        uint256 amount
-    ) internal returns (uint256 amountReceived) {
+    function lockERC20(address tokenAddress, address owner, uint256 amount) internal returns (uint256 amountReceived) {
         IERC20 erc20 = IERC20(tokenAddress);
         uint256 balanceBefore = erc20.balanceOf(address(this));
         safeTransferFrom(erc20, owner, address(this), amount);
@@ -33,11 +29,7 @@ contract ERC20Safe {
         @param recipient Address to transfer tokens to.
         @param amount Amount of tokens to transfer.
      */
-    function releaseERC20(
-        address tokenAddress,
-        address recipient,
-        uint256 amount
-    ) internal {
+    function releaseERC20(address tokenAddress, address recipient, uint256 amount) internal {
         IERC20 erc20 = IERC20(tokenAddress);
         safeTransfer(erc20, recipient, amount);
     }
@@ -48,11 +40,7 @@ contract ERC20Safe {
         @param recipient Address to mint token to.
         @param amount Amount of token to mint.
      */
-    function mintERC20(
-        address tokenAddress,
-        address recipient,
-        uint256 amount
-    ) internal {
+    function mintERC20(address tokenAddress, address recipient, uint256 amount) internal {
         IERC20MintableBurnable erc20 = IERC20MintableBurnable(tokenAddress);
         erc20.mint(recipient, amount);
     }
@@ -64,11 +52,7 @@ contract ERC20Safe {
         @param owner Current owner of tokens.
         @param amount Amount of tokens to burn.
      */
-    function burnERC20(
-        address tokenAddress,
-        address owner,
-        uint256 amount
-    ) internal {
+    function burnERC20(address tokenAddress, address owner, uint256 amount) internal {
         IERC20MintableBurnable erc20 = IERC20MintableBurnable(tokenAddress);
         uint256 balanceBefore = erc20.balanceOf(address(this));
         safeTransferFrom(erc20, owner, address(this), amount);
@@ -81,11 +65,7 @@ contract ERC20Safe {
         @param to Address to transfer token to
         @param value Amount of token to transfer
      */
-    function safeTransfer(
-        IERC20 token,
-        address to,
-        uint256 value
-    ) internal {
+    function safeTransfer(IERC20 token, address to, uint256 value) internal {
         _safeCall(token, abi.encodeWithSelector(token.transfer.selector, to, value));
     }
 
@@ -96,12 +76,7 @@ contract ERC20Safe {
         @param to Address to transfer token to
         @param value Amount of token to transfer
      */
-    function safeTransferFrom(
-        IERC20 token,
-        address from,
-        address to,
-        uint256 value
-    ) internal {
+    function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
         _safeCall(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
     }
 

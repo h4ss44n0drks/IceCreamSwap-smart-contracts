@@ -155,11 +155,7 @@ contract Bridge is Pausable, AccessControl {
         @param dataHash Hash of data to be provided when deposit proposal is executed.
         @param relayer Address to check.
      */
-    function _hasVotedOnProposal(
-        uint72 destNonce,
-        bytes32 dataHash,
-        address relayer
-    ) public view returns (bool) {
+    function _hasVotedOnProposal(uint72 destNonce, bytes32 dataHash, address relayer) public view returns (bool) {
         return _hasVoted(_proposals[destNonce][dataHash], relayer);
     }
 
@@ -245,11 +241,7 @@ contract Bridge is Pausable, AccessControl {
         @param resourceID ResourceID to be used when making deposits.
         @param tokenAddress Address of contract to be called when a deposit is made and a deposited is executed.
      */
-    function adminSetResource(
-        address handlerAddress,
-        bytes32 resourceID,
-        address tokenAddress
-    ) external onlyAdmin {
+    function adminSetResource(address handlerAddress, bytes32 resourceID, address tokenAddress) external onlyAdmin {
         _resourceIDToHandlerAddress[resourceID] = handlerAddress;
         IERCHandler(handlerAddress).setResource(resourceID, tokenAddress);
     }
@@ -455,11 +447,7 @@ contract Bridge is Pausable, AccessControl {
         @notice Proposal must be past expiry threshold.
         @notice Emits {ProposalEvent} event with status {Cancelled}.
      */
-    function cancelProposal(
-        uint8 domainID,
-        uint64 depositNonce,
-        bytes32 dataHash
-    ) public onlyAdminOrRelayer {
+    function cancelProposal(uint8 domainID, uint64 depositNonce, bytes32 dataHash) public onlyAdminOrRelayer {
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(domainID);
         Proposal memory proposal = _proposals[nonceAndID][dataHash];
         ProposalStatus currentStatus = proposal._status;
@@ -591,11 +579,7 @@ contract Bridge is Pausable, AccessControl {
         @param recipient recipient which should receive the withdrawn token
         @param amount how many tokens should be withdrawn
      */
-    function withdraw(
-        address tokenAddress,
-        address recipient,
-        uint256 amount
-    ) external onlyAdmin {
+    function withdraw(address tokenAddress, address recipient, uint256 amount) external onlyAdmin {
         if (tokenAddress == address(0)) {
             payable(recipient).transfer(amount);
         } else {

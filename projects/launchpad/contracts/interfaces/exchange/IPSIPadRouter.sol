@@ -10,14 +10,7 @@ interface IPSIPadRouter {
         uint256 amountETHMin,
         address to,
         uint256 deadline
-    )
-        external
-        payable
-        returns (
-            uint256 amountToken,
-            uint256 amountETH,
-            uint256 liquidity
-        );
+    ) external payable returns (uint256 amountToken, uint256 amountETH, uint256 liquidity);
 
     function addLiquidity(
         address tokenA,
@@ -28,11 +21,5 @@ interface IPSIPadRouter {
         uint256 amountBMin,
         address to,
         uint256 deadline
-    )
-        external
-        returns (
-            uint256 amountA,
-            uint256 amountB,
-            uint256 liquidity
-        );
+    ) external returns (uint256 amountA, uint256 amountB, uint256 liquidity);
 }

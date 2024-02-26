@@ -12,23 +12,14 @@ contract KycedContractMinter is Ownable {
     uint256 public feeAmount;
     address public feeReceiver;
 
-    constructor(
-        KycedContract _kycedContract,
-        IERC20 _feeToken,
-        uint256 _feeAmount,
-        address _feeReceiver
-    ) {
+    constructor(KycedContract _kycedContract, IERC20 _feeToken, uint256 _feeAmount, address _feeReceiver) {
         kycedContract = _kycedContract;
         feeToken = _feeToken;
         feeAmount = _feeAmount;
         feeReceiver = _feeReceiver;
     }
 
-    function delegate(
-        address to,
-        uint256 delegatorKycId,
-        bytes memory signature
-    ) external {
+    function delegate(address to, uint256 delegatorKycId, bytes memory signature) external {
         checkSignature(to, delegatorKycId, signature);
 
         feeToken.transferFrom(msg.sender, feeReceiver, feeAmount);
@@ -36,22 +27,14 @@ contract KycedContractMinter is Ownable {
         kycedContract.safeMint(to, delegatorKycId);
     }
 
-    function setFees(
-        IERC20 _feeToken,
-        uint256 _feeAmount,
-        address _feeReceiver
-    ) external onlyOwner {
+    function setFees(IERC20 _feeToken, uint256 _feeAmount, address _feeReceiver) external onlyOwner {
         require(address(feeToken) != address(0));
         feeToken = _feeToken;
         feeAmount = _feeAmount;
         feeReceiver = _feeReceiver;
     }
 
-    function checkSignature(
-        address to,
-        uint256 delegatorKycId,
-        bytes memory signature
-    ) internal view {
+    function checkSignature(address to, uint256 delegatorKycId, bytes memory signature) internal view {
         uint256 chainId = getChainID();
         bytes32 hash = getEthSignedMessageHash(keccak256(abi.encodePacked(chainId, delegatorKycId, to)));
 
@@ -72,15 +55,7 @@ contract KycedContractMinter is Ownable {
         return ecrecover(_ethSignedMessageHash, v, r, s);
     }
 
-    function splitSignature(bytes memory sig)
-        public
-        pure
-        returns (
-            bytes32 r,
-            bytes32 s,
-            uint8 v
-        )
-    {
+    function splitSignature(bytes memory sig) public pure returns (bytes32 r, bytes32 s, uint8 v) {
         require(sig.length == 65, "invalid signature length");
 
         assembly {

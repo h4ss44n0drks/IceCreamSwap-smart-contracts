@@ -114,11 +114,7 @@ contract IceCreamFarm is Ownable, ReentrancyGuard {
     /// @param _ICE The ICE token contract address.
     /// @param _totalIcePerBlock ICE to distribute per block
     /// @param _iceTreasury address that holds ICE and approves MasterChefV2 for spending it
-    constructor(
-        IERC20 _ICE,
-        uint256 _totalIcePerBlock,
-        address _iceTreasury
-    ) public {
+    constructor(IERC20 _ICE, uint256 _totalIcePerBlock, address _iceTreasury) public {
         ICE = _ICE;
         totalIcePerBlock = _totalIcePerBlock;
         iceTreasury = _iceTreasury;
@@ -165,12 +161,7 @@ contract IceCreamFarm is Ownable, ReentrancyGuard {
     /// @param _isRegular Whether the pool is regular or special. LP farms are always "regular". "Special" pools are
     /// @param _withUpdate Whether call "massUpdatePools" operation.
     /// only for ICE distributions within PaniceSwap products.
-    function add(
-        uint256 _allocPoint,
-        IERC20 _lpToken,
-        bool _isRegular,
-        bool _withUpdate
-    ) external onlyOwner {
+    function add(uint256 _allocPoint, IERC20 _lpToken, bool _isRegular, bool _withUpdate) external onlyOwner {
         require(_lpToken.balanceOf(address(this)) >= 0, "None ERC20 tokens");
 
         if (_withUpdate) {
@@ -200,11 +191,7 @@ contract IceCreamFarm is Ownable, ReentrancyGuard {
     /// @param _pid The id of the pool. See `poolInfo`.
     /// @param _allocPoint New number of allocation points for the pool.
     /// @param _withUpdate Whether call "massUpdatePools" operation.
-    function set(
-        uint256 _pid,
-        uint256 _allocPoint,
-        bool _withUpdate
-    ) external onlyOwner {
+    function set(uint256 _pid, uint256 _allocPoint, bool _withUpdate) external onlyOwner {
         // No matter _withUpdate is true or false, we need to execute updatePool once before set the pool parameters.
         updatePool(_pid);
 
@@ -497,11 +484,7 @@ contract IceCreamFarm is Ownable, ReentrancyGuard {
     /// @param _user The user address for settling rewards.
     /// @param _pid The pool id.
     /// @param _boostMultiplier The user boost multiplier in specific pool id.
-    function settlePendingIce(
-        address _user,
-        uint256 _pid,
-        uint256 _boostMultiplier
-    ) internal {
+    function settlePendingIce(address _user, uint256 _pid, uint256 _boostMultiplier) internal {
         UserInfo memory user = userInfo[_pid][_user];
 
         uint256 boostedAmount = user.amount.mul(_boostMultiplier).div(BOOST_PRECISION);

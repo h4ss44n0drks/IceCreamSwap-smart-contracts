@@ -69,11 +69,7 @@ abstract contract HandlerHelpers is IERCHandler {
         _removeResource(resourceID);
     }
 
-    function withdraw(
-        address tokenAddress,
-        address recipient,
-        uint256 amount
-    ) external onlyBridgeAdmin {
+    function withdraw(address tokenAddress, address recipient, uint256 amount) external onlyBridgeAdmin {
         if (tokenAddress == address(0)) {
             payable(recipient).transfer(amount);
         } else {

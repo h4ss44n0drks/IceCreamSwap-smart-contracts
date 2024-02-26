@@ -19,20 +19,11 @@ contract KycedContract is IceCreamSwapKyc {
         revert("missing argument");
     }
 
-    function _safeMint(
-        address to,
-        uint256 tokenId,
-        bytes memory
-    ) internal override {
+    function _safeMint(address to, uint256 tokenId, bytes memory) internal override {
         _mint(to, tokenId);
     }
 
-    function _safeTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory
-    ) internal override {
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory) internal override {
         _transfer(from, to, tokenId);
     }
 

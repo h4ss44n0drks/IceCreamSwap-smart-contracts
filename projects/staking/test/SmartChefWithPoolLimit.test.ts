@@ -84,7 +84,7 @@ contract("Smart Chef Pool Limit Per User", ([alice, bob, carol, david, erin, ...
         pancakeProfile.address,
         true,
         1000,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];
@@ -107,7 +107,7 @@ contract("Smart Chef Pool Limit Per User", ([alice, bob, carol, david, erin, ...
       await pancakeProfile.createProfile("1", mockPancakeBunnies.address, "0", { from: bob });
       await expectRevert(
         smartChef.deposit(parseEther("0"), { from: bob }),
-        "Deposit: User is not get enough user points"
+        "Deposit: User is not get enough user points",
       );
       assert.equal(String(await smartChef.pendingReward(bob)), "0");
     });
@@ -126,7 +126,7 @@ contract("Smart Chef Pool Limit Per User", ([alice, bob, carol, david, erin, ...
 
       await expectRevert(
         smartChef.deposit(parseEther("50"), { from: bob }),
-        "Deposit: User is not get enough user points"
+        "Deposit: User is not get enough user points",
       );
       assert.equal(String(await smartChef.pendingReward(bob)), parseEther("260").toString());
     });

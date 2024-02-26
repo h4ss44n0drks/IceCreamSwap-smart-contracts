@@ -65,10 +65,10 @@ interface IPSIPadCampaignFactory {
     /**
      * @notice calculates how many tokens are needed to start an campaign
      */
-    function tokensNeeded(IPSIPadCampaign.CampaignData calldata _data, uint256 _tokenFeePercentage)
-        external
-        view
-        returns (uint256 _tokensNeeded);
+    function tokensNeeded(
+        IPSIPadCampaign.CampaignData calldata _data,
+        uint256 _tokenFeePercentage
+    ) external view returns (uint256 _tokensNeeded);
 
     /**
      * @notice Add liqudity to an exchange and burn the remaining tokens,

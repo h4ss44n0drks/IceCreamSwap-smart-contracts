@@ -37,7 +37,7 @@ export async function verifyContract(contract: string, constructorArguments: any
         "\n",
         "....................",
         contract,
-        " error end............................"
+        " error end............................",
       );
     }
   }

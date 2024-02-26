@@ -13,11 +13,7 @@ interface IERC677 {
      * Returns boolean value indicating whether operation succeeded.
      * For more information on approveAndCall format, see https://github.com/ethereum/EIPs/issues/677.
      */
-    function approveAndCall(
-        address spender,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bool);
+    function approveAndCall(address spender, uint256 value, bytes calldata data) external returns (bool);
 
     /**
      * @dev Moves `value` AnyswapV3ERC20 token from caller's account to account (`to`),
@@ -29,9 +25,5 @@ interface IERC677 {
      *   - caller account must have at least `value` AnyswapV3ERC20 token.
      * For more information on transferAndCall format, see https://github.com/ethereum/EIPs/issues/677.
      */
-    function transferAndCall(
-        address to,
-        uint256 value,
-        bytes calldata data
-    ) external returns (bool);
+    function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool);
 }

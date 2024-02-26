@@ -47,11 +47,7 @@ contract TokenRegistry is Ownable, ITokenRegistry {
         numTokens = allTokens.length;
     }
 
-    function manualRegisterToken(
-        address token,
-        address creator,
-        address deployer
-    ) external onlyOwner {
+    function manualRegisterToken(address token, address creator, address deployer) external onlyOwner {
         _registerToken(token, creator, deployer);
     }
 
@@ -73,11 +69,7 @@ contract TokenRegistry is Ownable, ITokenRegistry {
         ice = _ice;
     }
 
-    function _registerToken(
-        address token,
-        address creator,
-        address deployer
-    ) internal {
+    function _registerToken(address token, address creator, address deployer) internal {
         uint256 tokenType = getDeployerTokenType[deployer];
         require(tokenType != 0, "Deployer not registered");
 

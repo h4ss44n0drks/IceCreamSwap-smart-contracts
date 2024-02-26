@@ -56,7 +56,7 @@ contract DividendToken is Ownable, IERC20 {
 
     //DividentMagnifier to make Reflection more accurate
 
-    uint256 constant DividentMagnifier = 2**128;
+    uint256 constant DividentMagnifier = 2 ** 128;
 
     uint256 TokensPerShare = DividentMagnifier;
 
@@ -180,11 +180,7 @@ contract DividendToken is Ownable, IERC20 {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    function _transfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) private {
+    function _transfer(address sender, address recipient, uint256 amount) private {
         require(sender != address(0), "transfer from zero");
 
         require(recipient != address(0), "transfer to zero");
@@ -195,11 +191,7 @@ contract DividendToken is Ownable, IERC20 {
         else transferWithFee(sender, recipient, amount);
     }
 
-    function transferFeeless(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) private {
+    function transferFeeless(address sender, address recipient, uint256 amount) private {
         removeTokens(sender, amount);
 
         addTokens(recipient, amount);
@@ -207,11 +199,7 @@ contract DividendToken is Ownable, IERC20 {
         emit Transfer(sender, recipient, amount);
     }
 
-    function transferWithFee(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) private {
+    function transferWithFee(address sender, address recipient, uint256 amount) private {
         removeTokens(sender, amount);
 
         uint256 tax = _transferTax;
@@ -537,14 +525,7 @@ contract DividendToken is Ownable, IERC20 {
     function getTaxes()
         public
         view
-        returns (
-            uint256 Buy,
-            uint256 Sell,
-            uint256 Transfer,
-            uint256 Reflection,
-            uint256 LP,
-            uint256 Marketing
-        )
+        returns (uint256 Buy, uint256 Sell, uint256 Transfer, uint256 Reflection, uint256 LP, uint256 Marketing)
     {
         Buy = _buyTax;
 
@@ -562,12 +543,7 @@ contract DividendToken is Ownable, IERC20 {
     function getInfo()
         public
         view
-        returns (
-            uint256 SwapTreshold,
-            uint256 TotalShares,
-            uint256 TotalExcluded,
-            bool ManualSwap
-        )
+        returns (uint256 SwapTreshold, uint256 TotalShares, uint256 TotalExcluded, bool ManualSwap)
     {
         SwapTreshold = _swapTreshold;
 
@@ -622,11 +598,7 @@ contract DividendToken is Ownable, IERC20 {
         return true;
     }
 
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) private {
+    function _approve(address owner, address spender, uint256 amount) private {
         require(owner != address(0) && spender != address(0), "!zero address");
 
         _allowances[owner][spender] = amount;
@@ -640,11 +612,7 @@ contract DividendToken is Ownable, IERC20 {
         return true;
     }
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
         _transfer(sender, recipient, amount);
 
         uint256 currentAllowance = _allowances[sender][msg.sender];

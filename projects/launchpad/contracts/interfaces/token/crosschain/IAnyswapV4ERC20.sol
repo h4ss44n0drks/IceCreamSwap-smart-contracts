@@ -57,11 +57,7 @@ interface IAnyswapV4ERC20 is IERC2612, IERC677 {
 
     function burn(address from, uint256 amount) external returns (bool);
 
-    function Swapin(
-        bytes32 txhash,
-        address account,
-        uint256 amount
-    ) external returns (bool);
+    function Swapin(bytes32 txhash, address account, uint256 amount) external returns (bool);
 
     function Swapout(uint256 amount, address bindaddr) external returns (bool);
 
@@ -99,9 +95,5 @@ interface IAnyswapV4ERC20 is IERC2612, IERC677 {
 
     function withdraw(uint256 amount, address to) external returns (uint256);
 
-    function withdrawVault(
-        address from,
-        uint256 amount,
-        address to
-    ) external returns (uint256);
+    function withdrawVault(address from, uint256 amount, address to) external returns (uint256);
 }

@@ -52,12 +52,9 @@ contract IceCreamSwapKyc is
         _burn(tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721Upgradeable, AccessControlUpgradeable, ERC721EnumerableUpgradeable)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC721Upgradeable, AccessControlUpgradeable, ERC721EnumerableUpgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 

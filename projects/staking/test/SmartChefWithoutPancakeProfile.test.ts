@@ -68,7 +68,7 @@ contract("Smart Chef Pool Limit Per User", ([alice, bob, carol, david, erin, ...
         pancakeProfile.address,
         false,
         0,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];

@@ -14,11 +14,7 @@ contract SwapHelper {
         dexRouter = _dexRouter;
     }
 
-    function swapToken(
-        uint256 tokens,
-        bool viaNative,
-        address tokenOut
-    ) external {
+    function swapToken(uint256 tokens, bool viaNative, address tokenOut) external {
         IERC20(msg.sender).transferFrom(msg.sender, address(this), tokens);
         IERC20(msg.sender).approve(address(dexRouter), tokens);
 

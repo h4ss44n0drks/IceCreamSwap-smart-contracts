@@ -64,7 +64,7 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
         pancakeProfile.address,
         true,
         0,
-        alice
+        alice,
       );
 
       const poolAddress = result.receipt.logs[2].args[0];
@@ -180,9 +180,9 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
           true,
           0,
           bob,
-          { from: bob }
+          { from: bob },
         ),
-        "Ownable: caller is not the owner"
+        "Ownable: caller is not the owner",
       );
     });
 
@@ -200,9 +200,9 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
           true,
           0,
           alice,
-          { from: alice }
+          { from: alice },
         ),
-        "Tokens must be be different"
+        "Tokens must be be different",
       );
 
       await expectRevert(
@@ -218,9 +218,9 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
           true,
           0,
           alice,
-          { from: alice }
+          { from: alice },
         ),
-        "function selector was not recognized and there's no fallback function"
+        "function selector was not recognized and there's no fallback function",
       );
 
       await expectRevert(
@@ -236,9 +236,9 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
           true,
           0,
           alice,
-          { from: alice }
+          { from: alice },
         ),
-        "function call to a non-contract account"
+        "function call to a non-contract account",
       );
     });
   });
@@ -266,21 +266,21 @@ contract("Smart Chef Factory", ([alice, bob, carol, david, erin, ...accounts]) =
     it("Owner cannot recover token if balance is zero", async () => {
       await expectRevert(
         smartChef.recoverToken(fakeCake.address, { from: alice }),
-        "Operations: Cannot recover zero balance"
+        "Operations: Cannot recover zero balance",
       );
     });
 
     it("Owner cannot recover staked token", async () => {
       await expectRevert(
         smartChef.recoverToken(mockCAKE.address, { from: alice }),
-        "Operations: Cannot recover staked token"
+        "Operations: Cannot recover staked token",
       );
     });
 
     it("Owner cannot recover reward token", async () => {
       await expectRevert(
         smartChef.recoverToken(mockPT.address, { from: alice }),
-        "Operations: Cannot recover reward token"
+        "Operations: Cannot recover reward token",
       );
     });
   });

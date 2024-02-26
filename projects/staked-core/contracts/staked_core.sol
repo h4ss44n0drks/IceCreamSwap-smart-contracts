@@ -217,11 +217,7 @@ contract StakedCore is ERC20, Ownable {
 
     /*********************** Internal methods ***************************/
 
-    function _afterTokenTransfer(
-        address,
-        address,
-        uint256
-    ) internal override {
+    function _afterTokenTransfer(address, address, uint256) internal override {
         if (compoundOnTransfer) {
             uint256 timeSinceLastCompound = block.timestamp - lastCompound;
             if (timeSinceLastCompound >= 1 hours) {
