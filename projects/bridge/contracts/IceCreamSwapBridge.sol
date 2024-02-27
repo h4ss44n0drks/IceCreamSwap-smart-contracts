@@ -155,7 +155,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         @param dataHash Hash of data to be provided when deposit proposal is executed.
         @param relayer Address to check.
      */
-    function _hasVotedOnProposal(uint72 destNonce, bytes32 dataHash, address relayer) public view returns (bool) {
+    function _hasVotedOnProposal(uint72 destNonce, bytes32 dataHash, address relayer) external view returns (bool) {
         return _hasVoted(_proposals[destNonce][dataHash], relayer);
     }
 
@@ -449,7 +449,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         @notice Proposal must be past expiry threshold.
         @notice Emits {ProposalEvent} event with status {Cancelled}.
      */
-    function cancelProposal(uint8 domainID, uint64 depositNonce, bytes32 dataHash) public onlyAdminOrRelayer {
+    function cancelProposal(uint8 domainID, uint64 depositNonce, bytes32 dataHash) external onlyAdminOrRelayer {
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(domainID);
         Proposal memory proposal = _proposals[nonceAndID][dataHash];
         ProposalStatus currentStatus = proposal._status;
