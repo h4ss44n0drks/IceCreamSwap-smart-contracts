@@ -1,10 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-ethers";
-import { networks } from "networks";
+import { default as hardhatConfigTemplate } from "@icecreamswap/common/src/hardhat.config";
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "hardhat",
-  networks,
+  ...hardhatConfigTemplate,
   solidity: {
     version: "0.8.17",
     settings: {

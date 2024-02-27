@@ -8,6 +8,9 @@
     "compile": "npx hardhat compile",
     "deploy": "npx hardhat run scripts/deploy.ts"
   },
+  "dependencies": {
+    "@icecreamswap/common": "*"
+  },
   "devDependencies": {
     "@openzeppelin/contracts": "3.4.1"
   }

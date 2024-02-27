@@ -9,7 +9,7 @@
     "test": "npx hardhat test"
   },
   "dependencies": {
-      "networks": "*"
+    "@icecreamswap/common": "*"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.4.2"

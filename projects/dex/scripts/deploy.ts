@@ -1,5 +1,5 @@
 import { ethers, network } from "hardhat";
-import { chainConfigs, dexConfig } from "common";
+import { chainConfigs, dexConfig } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {
@@ -11,16 +11,16 @@ async function main() {
 
   const Factory = await ethers.getContractFactory("IceCreamSwapV2Factory");
   const factory = await Factory.deploy(dexConfig.dexAdmin);
-  console.log(`Factory deployed to ${factory.target}`);
+  console.log(`Factory deployed to ${factory.target.toString()}`);
   console.log(await factory.INIT_CODE_HASH());
 
   const Router = await ethers.getContractFactory("IceCreamSwapV2Router");
   const router = await Router.deploy(factory.target, config.weth);
-  console.log(`Router deployed to ${router.target}`);
+  console.log(`Router deployed to ${router.target.toString()}`);
 
   const contracts = {
-    factory: factory.target,
-    router: router.target,
+    factory: factory.target.toString(),
+    router: router.target.toString(),
   };
   writeFileSync(`./deployments/${networkName}.json`, JSON.stringify(contracts, null, 2));
 }

@@ -9,7 +9,7 @@
     "deploy": "npx hardhat run scripts/deploy.ts"
   },
   "dependencies": {
-      "common": "*"
+      "@icecreamswap/common": "*"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.5.0"

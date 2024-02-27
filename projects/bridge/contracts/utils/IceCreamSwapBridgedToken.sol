@@ -26,7 +26,7 @@ import "@openzeppelin/contracts/utils/Context.sol";
  *
  * _Deprecated in favor of https://wizard.openzeppelin.com/[Contracts Wizard]._
  */
-contract BridgedToken is Context, AccessControlEnumerable, ERC20Burnable, ERC20Pausable {
+contract IceCreamSwapBridgedToken is Context, AccessControlEnumerable, ERC20Burnable, ERC20Pausable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 

@@ -1,5 +1,5 @@
 import { ethers, network } from "hardhat";
-import { chainConfigs, farmConfig } from "common";
+import { chainConfigs, farmConfig } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {

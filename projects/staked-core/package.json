@@ -8,7 +8,7 @@
     "compile": "npx hardhat compile"
   },
   "dependencies": {
-      "networks": "*"
+    "@icecreamswap/common": "*"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.8.1"

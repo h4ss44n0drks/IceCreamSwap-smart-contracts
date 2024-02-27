@@ -10,7 +10,7 @@ import "../ERC20Safe.sol";
     @title Handles ERC20 and native deposits and vote executions.
     @notice This contract is intended to be used with the Bridge contract.
  */
-contract ERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC20Safe {
+contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC20Safe {
     // token contract address => is burnable
     mapping(address => bool) public _burnList;
 
