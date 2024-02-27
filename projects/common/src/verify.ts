@@ -1,44 +1,22 @@
-import { Contract } from "ethers";
 import { run } from "hardhat";
+import { Addressable } from "ethers/lib.esm/address";
 
-export async function tryVerify(contract: Contract, constructorArguments: any[] = [], libraries: any = {}) {
-  if (process.env.ETHERSCAN_API_KEY && process.env.NETWORK !== "hardhat") {
+export async function tryVerify(
+  contractAddress: string | Addressable,
+  constructorArguments: any[] = [],
+  libraries: any = {},
+) {
+  if (process.env.HARDHAT_NETWORK !== "hardhat") {
     try {
-      await contract.deployed();
-      console.info("Verifying", contract.address, constructorArguments);
-      const verify = await run("verify:verify", {
-        address: contract.address,
+      console.info("Verifying", contractAddress, constructorArguments);
+      await run("verify:verify", {
+        address: contractAddress,
         constructorArguments,
         libraries,
       });
-      console.log(verify, "verify");
+      console.log("verification completed");
     } catch (error) {
       console.error(error);
-    }
-  }
-}
-
-export async function verifyContract(contract: string, constructorArguments: any[] = []) {
-  if (process.env.ETHERSCAN_API_KEY && process.env.NETWORK !== "hardhat") {
-    try {
-      console.info("Verifying", contract, constructorArguments);
-      const verify = await run("verify:verify", {
-        address: contract,
-        constructorArguments,
-      });
-      console.log(contract, " verify successfully");
-    } catch (error) {
-      console.log(
-        "....................",
-        contract,
-        " error start............................",
-        "\n",
-        error,
-        "\n",
-        "....................",
-        contract,
-        " error end............................",
-      );
     }
   }
 }

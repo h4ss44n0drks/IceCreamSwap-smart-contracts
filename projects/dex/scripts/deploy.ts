@@ -1,5 +1,5 @@
-import { ethers, network } from "hardhat";
-import { chainConfigs, dexConfig } from "@icecreamswap/common";
+import { network } from "hardhat";
+import { chainConfigs, deployAndVerify, dexConfig } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {
@@ -9,14 +9,9 @@ async function main() {
     throw new Error(`No config found for network ${networkName}`);
   }
 
-  const Factory = await ethers.getContractFactory("IceCreamSwapV2Factory");
-  const factory = await Factory.deploy(dexConfig.dexAdmin);
-  console.log(`Factory deployed to ${factory.target.toString()}`);
-  console.log(await factory.INIT_CODE_HASH());
+  const factory = await deployAndVerify("IceCreamSwapV2Factory", [dexConfig.dexAdmin]);
 
-  const Router = await ethers.getContractFactory("IceCreamSwapV2Router");
-  const router = await Router.deploy(factory.target, config.weth);
-  console.log(`Router deployed to ${router.target.toString()}`);
+  const router = await deployAndVerify("IceCreamSwapV2Router", [factory.target, config.weth]);
 
   const contracts = {
     factory: factory.target.toString(),

@@ -1,5 +1,5 @@
-import { ethers, network } from "hardhat";
-import { chainConfigs } from "@icecreamswap/common";
+import { network } from "hardhat";
+import { chainConfigs, deployAndVerify } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {
@@ -9,9 +9,7 @@ async function main() {
     throw new Error(`No config found for network ${networkName}`);
   }
 
-  const Multicall = await ethers.getContractFactory("Multicall3");
-  const multicall = await Multicall.deploy();
-  console.log(`Multicall deployed to ${multicall.target}`);
+  const multicall = await deployAndVerify("Multicall3", []);
 
   const contracts = {
     multicall: multicall.target,

@@ -1,5 +1,5 @@
-import { ethers, network } from "hardhat";
-import { chainConfigs, farmConfig } from "@icecreamswap/common";
+import { network } from "hardhat";
+import { chainConfigs, deployAndVerify, farmConfig } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {
@@ -9,9 +9,7 @@ async function main() {
     throw new Error(`No config found for network ${networkName}`);
   }
 
-  const Farm = await ethers.getContractFactory("IceCreamFarm");
-  const farm = await Farm.deploy(config.ice, 0, farmConfig.iceTreasury);
-  console.log(`Farm deployed to ${farm.target}`);
+  const farm = await deployAndVerify("IceCreamFarm", [config.ice, 0, farmConfig.iceTreasury]);
 
   await farm.transferOwnership(farmConfig.farmAdmin);
 
