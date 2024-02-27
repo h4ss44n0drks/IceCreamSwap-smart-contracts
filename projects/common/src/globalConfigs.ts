@@ -1,4 +1,3 @@
-
 export const bridgeConfig = {
   bridgeAdmin: "0xe020582E77b5aA9e471e1A127906476242d12cb7",
   relayers: ["0xe4B30ce8D7Fd3A546D8a2a785D7D6108cCD1D683", "0x79f0939bf2E1bD0a9b526BE1A5462976b03a1278"],

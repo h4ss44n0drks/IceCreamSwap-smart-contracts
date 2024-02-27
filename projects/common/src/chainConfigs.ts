@@ -14,7 +14,7 @@ const chainConfigs = {
     chainId: 1116,
     url: "https://rpc-core.icecreamswap.com",
     explorer: "https://scan.coredao.org",
-    explorerApi: null,
+    explorerApi: "https://openapi.coredao.org/api",
     explorerApiKey: "",
     ice: "0xc0E49f8C615d3d4c245970F6Dc528E4A47d69a44",
     bridgeDomainId: 7,
@@ -168,4 +168,4 @@ const chainConfigs = {
   },
 } as const;
 
-export default chainConfigs
+export default chainConfigs;

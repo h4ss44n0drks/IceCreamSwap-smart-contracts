@@ -9,23 +9,24 @@ import { ChainConfig } from "@nomicfoundation/hardhat-verify/src/types";
 
 const hardhatConfigTemplate: HardhatUserConfig = {
   defaultNetwork: "hardhat",
-  networks: Object.entries(chainConfigs).reduce((acc: {[index: string]: {}}, chainObj) => {
-    const [chainName, chain] = chainObj
-    if (chainName === "hardhat") return acc
+  networks: Object.entries(chainConfigs).reduce((acc: { [index: string]: {} }, chainObj) => {
+    const [chainName, chain] = chainObj;
+    if (chainName === "hardhat") return acc;
     acc[chainName] = {
       url: chain.url,
       chainId: chain.chainId,
       accounts: [process.env.PRIVATE_KEY!],
-    }
-    return acc
+    };
+    return acc;
   }, {}),
   etherscan: {
-    apiKey: Object.keys(chainConfigs).reduce((acc: {[index: string]: ""}, chainName) => {
-      acc[chainName] = ""
-      return acc
+    apiKey: Object.entries(chainConfigs).reduce((acc: { [index: string]: string }, chainObj) => {
+      const [chainName, chain] = chainObj;
+      acc[chainName] = chain.explorerApiKey || "";
+      return acc;
     }, {}),
     customChains: Object.entries(chainConfigs).reduce((acc, chainObj) => {
-      const [chainName, chain] = chainObj
+      const [chainName, chain] = chainObj;
       if (chain.explorerApi) {
         acc.push({
           network: chainName,
@@ -33,12 +34,12 @@ const hardhatConfigTemplate: HardhatUserConfig = {
           urls: {
             apiURL: chain.explorerApi,
             browserURL: chain.explorer,
-          }
-        })
+          },
+        });
       }
-      return acc
+      return acc;
     }, [] as ChainConfig[]),
   },
-}
+};
 
 export default hardhatConfigTemplate;
