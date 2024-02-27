@@ -37,6 +37,7 @@ abstract contract HandlerHelpers is IERCHandler {
         @param bridgeAddress Contract address of previously deployed Bridge.
      */
     constructor(address bridgeAddress) {
+        require(bridgeAddress != address(0));
         _bridgeAddress = bridgeAddress;
     }
 
@@ -87,7 +88,7 @@ abstract contract HandlerHelpers is IERCHandler {
 
     function _removeResource(bytes32 resourceID) internal virtual {
         address contractAddress = _resourceIDToTokenContractAddress[resourceID];
-        require(contractAddress != address(0), "not set");
+        require(contractAddress != address(0), "invalid resourceID");
         _resourceIDToTokenContractAddress[resourceID] = address(0);
         _tokenContractAddressToResourceID[contractAddress] = bytes32(0);
 

@@ -55,7 +55,7 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
         uint256 amount = abi.decode(data, (uint256));
 
         address tokenAddress = _resourceIDToTokenContractAddress[resourceID];
-        require(_contractWhitelist[tokenAddress], "provided tokenAddress is not whitelisted");
+        require(_contractWhitelist[tokenAddress], "invalid resourceID");
 
         uint256 fee = _calculateFee(resourceID, destinationDomainID, amount);
         amount -= fee;
@@ -91,7 +91,7 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
      */
     function executeProposal(bytes32 resourceID, bytes calldata data) external override onlyBridge {
         address tokenAddress = _resourceIDToTokenContractAddress[resourceID];
-        require(_contractWhitelist[tokenAddress], "unhandled token");
+        require(_contractWhitelist[tokenAddress], "invalid resourceID");
 
         (uint256 amount, uint256 lenDestinationRecipientAddress) = abi.decode(data, (uint256, uint256));
 
@@ -141,7 +141,7 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
         uint256 amount = abi.decode(data, (uint256));
 
         feeToken = _resourceIDToTokenContractAddress[resourceID];
-        require(_contractWhitelist[feeToken], "unhandled token");
+        require(_contractWhitelist[feeToken], "invalid resourceID");
 
         fee = _calculateFee(resourceID, destinationDomainID, amount);
     }

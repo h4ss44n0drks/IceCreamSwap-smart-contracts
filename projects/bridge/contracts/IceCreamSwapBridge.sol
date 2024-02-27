@@ -90,19 +90,18 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
 
     function _onlyAdminOrRelayer() private view {
         address sender = _msgSender();
-        require(hasRole(DEFAULT_ADMIN_ROLE, sender) || hasRole(RELAYER_ROLE, sender), "sender is not relayer or admin");
+        require(hasRole(DEFAULT_ADMIN_ROLE, sender) || hasRole(RELAYER_ROLE, sender), "!admin|relayer");
     }
 
     function _onlyAdmin() private view {
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "sender doesn't have admin role");
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "!admin");
     }
 
     function _onlyRelayers() private view {
-        require(hasRole(RELAYER_ROLE, _msgSender()), "sender doesn't have relayer role");
+        require(hasRole(RELAYER_ROLE, _msgSender()), "!relayer");
     }
 
     function _relayerBit(address relayer) private view returns (uint256) {
-        require(AccessControl.hasRole(RELAYER_ROLE, relayer), "!relayer");
         return uint256(1) << (AccessControl.getRoleMemberIndex(RELAYER_ROLE, relayer) - 1);
     }
 
@@ -134,6 +133,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         uint256 expiry,
         uint256 bridgeFee
     ) {
+        require(domainID != 0 && initialRelayerThreshold != 0);
         _domainID = domainID;
         _relayerThreshold = initialRelayerThreshold.toUint8();
         _expiry = expiry.toUint40();
@@ -174,7 +174,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
      */
     function transferAdmin(address newAdmin) external onlyAdmin {
         address sender = _msgSender();
-        require(sender != newAdmin, "Cannot renounce oneself");
+        require(sender != newAdmin);
         grantRole(DEFAULT_ADMIN_ROLE, newAdmin);
         renounceRole(DEFAULT_ADMIN_ROLE, sender);
     }
@@ -202,6 +202,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         @notice Emits {RelayerThresholdChanged} event.
      */
     function adminChangeRelayerThreshold(uint256 newThreshold) external onlyAdmin {
+        require(newThreshold != 0);
         _relayerThreshold = newThreshold.toUint8();
         emit RelayerThresholdChanged(newThreshold);
     }
@@ -214,8 +215,8 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         @notice Emits {RelayerAdded} event.
      */
     function adminAddRelayer(address relayerAddress) external {
-        require(!hasRole(RELAYER_ROLE, relayerAddress), "addr already has relayer role!");
-        require(_totalRelayers() < MAX_RELAYERS, "relayers limit reached");
+        require(!hasRole(RELAYER_ROLE, relayerAddress), "already relayer");
+        require(_totalRelayers() < MAX_RELAYERS, "relayer limit");
         grantRole(RELAYER_ROLE, relayerAddress);
         emit RelayerAdded(relayerAddress);
     }
@@ -228,7 +229,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         @notice Emits {RelayerRemoved} event.
      */
     function adminRemoveRelayer(address relayerAddress) external {
-        require(hasRole(RELAYER_ROLE, relayerAddress), "addr doesn't have relayer role!");
+        require(hasRole(RELAYER_ROLE, relayerAddress), "!relayer");
         revokeRole(RELAYER_ROLE, relayerAddress);
         emit RelayerRemoved(relayerAddress);
     }
@@ -242,6 +243,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         @param tokenAddress Address of contract to be called when a deposit is made and a deposited is executed.
      */
     function adminSetResource(address handlerAddress, bytes32 resourceID, address tokenAddress) external onlyAdmin {
+        require(handlerAddress != address(0) && resourceID != bytes32(0) && tokenAddress != address(0));
         _resourceIDToHandlerAddress[resourceID] = handlerAddress;
         IERCHandler(handlerAddress).setResource(resourceID, tokenAddress);
     }
@@ -262,6 +264,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         uint256 depositFunctionDepositerOffset,
         bytes4 executeFunctionSig
     ) external onlyAdmin {
+        require(handlerAddress != address(0) && resourceID != bytes32(0) && contractAddress != address(0));
         _resourceIDToHandlerAddress[resourceID] = handlerAddress;
         IGenericHandler(handlerAddress).setResource(
             resourceID,
@@ -279,6 +282,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
      */
     function adminRemoveResource(bytes32 resourceID) external onlyAdmin {
         address handlerAddress = _resourceIDToHandlerAddress[resourceID];
+        require(handlerAddress != address(0), "invalid resourceID");
         _resourceIDToHandlerAddress[resourceID] = address(0);
         IERCHandler(handlerAddress).removeResource(resourceID);
     }
@@ -290,7 +294,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         @param nonce The nonce value to be set.
      */
     function adminSetDepositNonce(uint8 domainID, uint64 nonce) external onlyAdmin {
-        require(nonce > _depositCounts[domainID], "Does not allow decrements of the nonce");
+        require(nonce > _depositCounts[domainID], "no decrements");
         _depositCounts[domainID] = nonce;
     }
 
@@ -326,7 +330,6 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
 
     /**
         @notice Returns total relayers number.
-        @notice Added for backwards compatibility.
      */
     function _totalRelayers() public view returns (uint256) {
         return AccessControl.getRoleMemberCount(RELAYER_ROLE);
@@ -349,10 +352,10 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         bytes calldata data
     ) external payable whenNotPaused {
         address handler = _resourceIDToHandlerAddress[resourceID];
-        require(handler != address(0), "resourceID not mapped to handler");
+        require(handler != address(0), "invalid resourceID");
 
         uint256 bridgeFee = calculateBridgeFee(destinationDomainID, resourceID, data);
-        require(msg.value >= bridgeFee);
+        require(msg.value >= bridgeFee, "Insufficient native fee");
 
         uint64 depositNonce = ++_depositCounts[destinationDomainID];
         address sender = _msgSender();
@@ -398,8 +401,8 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
 
         address sender = _msgSender();
 
-        require(uint256(proposal._status) <= 1, "proposal already executed/cancelled");
-        require(!_hasVoted(proposal, sender), "relayer already voted");
+        require(uint256(proposal._status) <= 1, "proposal completed");
+        require(!_hasVoted(proposal, sender), "already voted");
 
         if (proposal._status == ProposalStatus.Inactive) {
             proposal = Proposal({
@@ -453,9 +456,9 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
 
         require(
             currentStatus == ProposalStatus.Active || currentStatus == ProposalStatus.Passed,
-            "Proposal cannot be cancelled"
+            "cannot be cancelled"
         );
-        require(uint40(block.number - proposal._proposedBlock) > _expiry, "Proposal not at expiry threshold");
+        require(uint40(block.number - proposal._proposedBlock) > _expiry, "not expired");
 
         proposal._status = ProposalStatus.Cancelled;
         _proposals[nonceAndID][dataHash] = proposal;
@@ -484,11 +487,12 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         bool revertOnFail
     ) public onlyRelayers whenNotPaused {
         address handler = _resourceIDToHandlerAddress[resourceID];
+        require(handler != address(0), "invalid resourceID");
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(domainID);
         bytes32 dataHash = keccak256(abi.encodePacked(resourceID, data));
         Proposal storage proposal = _proposals[nonceAndID][dataHash];
 
-        require(proposal._status == ProposalStatus.Passed, "Proposal must have Passed status");
+        require(proposal._status == ProposalStatus.Passed, "!passed");
 
         proposal._status = ProposalStatus.Executed;
         IDepositExecute depositHandler = IDepositExecute(handler);
@@ -518,7 +522,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         bytes calldata data
     ) external view returns (address feeToken, uint256 fee) {
         address handler = _resourceIDToHandlerAddress[resourceID];
-        require(handler != address(0), "resourceID not mapped to handler");
+        require(handler != address(0), "invalid resourceID");
 
         address sender = _msgSender();
 
