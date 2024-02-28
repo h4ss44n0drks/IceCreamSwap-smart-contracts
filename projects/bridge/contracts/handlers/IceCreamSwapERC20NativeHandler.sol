@@ -3,6 +3,7 @@ pragma solidity 0.8.11;
 pragma experimental ABIEncoderV2;
 
 import "../interfaces/IDepositExecute.sol";
+import "../interfaces/IRateLimiter.sol";
 import "./HandlerHelpers.sol";
 import "../ERC20Safe.sol";
 
@@ -22,6 +23,9 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
     mapping(bytes32 => uint256) public resourceFeeMultipliers;
     // destinationDomainID => resourceID => fee multiplier. 1_000 = 1x, defaults to 1x
     mapping(uint8 => mapping(bytes32 => uint256)) public individualFeeMultipliers;
+
+    // optional rate limiter contract, if zero address, no rate limits apply
+    IRateLimiter public rateLimiter;
 
     // this address will be interpreted as the native coin, e.g. ETH
     // as address(0) is the default value, it can be dangerous to use address(0) as native address
@@ -56,6 +60,12 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
 
         address tokenAddress = _resourceIDToTokenContractAddress[resourceID];
         require(_contractWhitelist[tokenAddress], "invalid resourceID");
+
+        if (address(rateLimiter) != address(0)) {
+            // update rate limiter
+            // if rate limit is reached, rate limiter reverts
+            rateLimiter.update(resourceID, -int256(amount));
+        }
 
         uint256 fee = _calculateFee(resourceID, destinationDomainID, amount);
         amount -= fee;
@@ -95,6 +105,12 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
 
         (uint256 amount, uint256 lenDestinationRecipientAddress) = abi.decode(data, (uint256, uint256));
 
+        if (address(rateLimiter) != address(0)) {
+            // update rate limiter
+            // if rate limit is reached, rate limiter reverts
+            rateLimiter.update(resourceID, int256(amount));
+        }
+
         address recipientAddress;
         {
             // local closure to decode recipientAddress
@@ -130,6 +146,10 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
         require(_contractWhitelist[contractAddress], "!whitelisted");
         require(contractAddress != NATIVE_ADDRESS, "native");
         _burnList[contractAddress] = burnable;
+    }
+
+    function updateRateLimiter(address _rateLimiter) external onlyBridgeAdmin {
+        rateLimiter = IRateLimiter(_rateLimiter);
     }
 
     function calculateFee(
