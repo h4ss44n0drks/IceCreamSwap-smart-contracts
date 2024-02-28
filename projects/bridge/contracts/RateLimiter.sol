@@ -11,7 +11,7 @@ contract RateLimiter is Ownable {
         uint256 interval;
     }
 
-    address public bridge;
+    address public bridgeHandler;
     mapping(bytes32 => RateLimit[]) public rateLimits;
     mapping(bytes32 => uint256) public lastUpdates;
 
@@ -20,13 +20,13 @@ contract RateLimiter is Ownable {
     event LimitRemoved(bytes32 indexed resourceId, uint256 indexed index);
 
 
-    modifier onlyBridge() {
-        require(msg.sender == bridge);
+    modifier onlyBridgeHandler() {
+        require(msg.sender == bridgeHandler);
         _;
     }
 
-    constructor(address _bridge) {
-        bridge = _bridge;
+    constructor(address _bridgeHandler) {
+        bridgeHandler = _bridgeHandler;
     }
 
     function getNumLimits(bytes32 resourceId) external view returns(uint256) {
@@ -53,7 +53,7 @@ contract RateLimiter is Ownable {
         emit LimitRemoved(resourceId, index);
     }
 
-    function update(bytes32 resourceId, int256 amount) external onlyBridge {
+    function update(bytes32 resourceId, int256 amount) external onlyBridgeHandler {
         uint256 timestamp = block.timestamp;
         for (uint256 i=0; i < rateLimits[resourceId].length; i++) {
             RateLimit memory rateLimit = rateLimits[resourceId][i];
