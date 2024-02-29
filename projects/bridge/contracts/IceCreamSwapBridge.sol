@@ -57,8 +57,6 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
     mapping(bytes32 => uint256) public resourceFeeMultipliers;
 
     event RelayerThresholdChanged(uint256 newThreshold);
-    event RelayerAdded(address relayer);
-    event RelayerRemoved(address relayer);
     event Deposit(
         uint8 destinationDomainID,
         bytes32 resourceID,
@@ -72,14 +70,10 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
     event FailedHandlerExecution(bytes lowLevelData);
 
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
+    bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
 
     modifier onlyAdmin() {
         _onlyAdmin();
-        _;
-    }
-
-    modifier onlyAdminOrRelayer() {
-        _onlyAdminOrRelayer();
         _;
     }
 
@@ -88,9 +82,14 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         _;
     }
 
-    function _onlyAdminOrRelayer() private view {
-        address sender = _msgSender();
-        require(hasRole(DEFAULT_ADMIN_ROLE, sender) || hasRole(RELAYER_ROLE, sender), "!admin|relayer");
+    modifier onlyAdminOrRelayer() {
+        _onlyAdminOrRelayer();
+        _;
+    }
+
+    modifier onlyAdminRelayerOrExecutor() {
+        _onlyAdminRelayerOrExecutor();
+        _;
     }
 
     function _onlyAdmin() private view {
@@ -101,8 +100,23 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         require(hasRole(RELAYER_ROLE, _msgSender()), "!relayer");
     }
 
+    function _onlyAdminOrRelayer() private view {
+        address sender = _msgSender();
+        require(hasRole(DEFAULT_ADMIN_ROLE, sender) || hasRole(RELAYER_ROLE, sender), "!admin|relayer");
+    }
+
+    function _onlyAdminRelayerOrExecutor() private view {
+        address sender = _msgSender();
+        require(
+            hasRole(DEFAULT_ADMIN_ROLE, sender) || hasRole(RELAYER_ROLE, sender) || hasRole(EXECUTOR_ROLE, sender),
+            "!admin|relayer|executor"
+        );
+    }
+
     function _relayerBit(address relayer) private view returns (uint256) {
-        return uint256(1) << (AccessControl.getRoleMemberIndex(RELAYER_ROLE, relayer) - 1);
+        uint256 relayerIdx = AccessControl.getRoleMemberIndex(RELAYER_ROLE, relayer);
+        require(relayerIdx <= MAX_RELAYERS, ">MAX_RELAYERS");
+        return uint256(1) << (relayerIdx - 1);
     }
 
     function _hasVoted(Proposal memory proposal, address relayer) private view returns (bool) {
@@ -205,33 +219,6 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         require(newThreshold != 0);
         _relayerThreshold = newThreshold.toUint8();
         emit RelayerThresholdChanged(newThreshold);
-    }
-
-    /**
-        @notice Grants {relayerAddress} the relayer role.
-        @notice Only callable by an address that currently has the admin role, which is
-                checked in grantRole().
-        @param relayerAddress Address of relayer to be added.
-        @notice Emits {RelayerAdded} event.
-     */
-    function adminAddRelayer(address relayerAddress) external {
-        require(!hasRole(RELAYER_ROLE, relayerAddress), "already relayer");
-        require(_totalRelayers() < MAX_RELAYERS, "relayer limit");
-        grantRole(RELAYER_ROLE, relayerAddress);
-        emit RelayerAdded(relayerAddress);
-    }
-
-    /**
-        @notice Removes relayer role for {relayerAddress}.
-        @notice Only callable by an address that currently has the admin role, which is
-                checked in revokeRole().
-        @param relayerAddress Address of relayer to be removed.
-        @notice Emits {RelayerRemoved} event.
-     */
-    function adminRemoveRelayer(address relayerAddress) external {
-        require(hasRole(RELAYER_ROLE, relayerAddress), "!relayer");
-        revokeRole(RELAYER_ROLE, relayerAddress);
-        emit RelayerRemoved(relayerAddress);
     }
 
     /**
@@ -485,7 +472,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
         bytes calldata data,
         bytes32 resourceID,
         bool revertOnFail
-    ) public onlyRelayers whenNotPaused {
+    ) public onlyAdminRelayerOrExecutor whenNotPaused {
         address handler = _resourceIDToHandlerAddress[resourceID];
         require(handler != address(0), "invalid resourceID");
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(domainID);
