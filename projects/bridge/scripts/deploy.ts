@@ -23,9 +23,7 @@ async function main() {
     bridgeConfig.tokenFeePercent * 100,
   ]);
 
-  const rateLimiter = await deployAndVerify("RateLimiter", [
-    erc20Handler.target,
-  ]);
+  const rateLimiter = await deployAndVerify("RateLimiter", [erc20Handler.target]);
   erc20Handler.updateRateLimiter(rateLimiter.target);
 
   const tokens: { [symbol: string]: string } = {};
@@ -39,8 +37,8 @@ async function main() {
     await bridgedToken.revokeRole(bridgedToken.DEFAULT_ADMIN_ROLE(), sender);
     await bridge.adminSetResource(erc20Handler.target, tokenConfig.resourceId, bridgedToken.target);
     await erc20Handler.setBurnable(bridgedToken.target, true);
-    await rateLimiter.addLimit(tokenConfig.resourceId, tokenConfig.rateLimit4h, 4*60*60);
-    await rateLimiter.addLimit(tokenConfig.resourceId, tokenConfig.rateLimit1d, 24*60*60);
+    await rateLimiter.addLimit(tokenConfig.resourceId, tokenConfig.rateLimit4h, 4 * 60 * 60);
+    await rateLimiter.addLimit(tokenConfig.resourceId, tokenConfig.rateLimit1d, 24 * 60 * 60);
 
     tokens[tokenConfig.symbol] = bridgedToken.target.toString();
   }

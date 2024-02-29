@@ -3,7 +3,6 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-
 contract RateLimiter is Ownable {
     struct RateLimit {
         int128 lastValue;
@@ -19,7 +18,6 @@ contract RateLimiter is Ownable {
     event LimitUpdated(bytes32 indexed resourceId, uint256 indexed index, uint128 limit, uint256 interval);
     event LimitRemoved(bytes32 indexed resourceId, uint256 indexed index);
 
-
     modifier onlyBridgeHandler() {
         require(msg.sender == bridgeHandler);
         _;
@@ -29,7 +27,7 @@ contract RateLimiter is Ownable {
         bridgeHandler = _bridgeHandler;
     }
 
-    function getNumLimits(bytes32 resourceId) external view returns(uint256) {
+    function getNumLimits(bytes32 resourceId) external view returns (uint256) {
         return rateLimits[resourceId].length;
     }
 
@@ -55,16 +53,17 @@ contract RateLimiter is Ownable {
 
     function update(bytes32 resourceId, int256 amount) external onlyBridgeHandler {
         uint256 timestamp = block.timestamp;
-        for (uint256 i=0; i < rateLimits[resourceId].length; i++) {
+        for (uint256 i = 0; i < rateLimits[resourceId].length; i++) {
             RateLimit memory rateLimit = rateLimits[resourceId][i];
             if (rateLimit.interval == 0) continue;
 
             int256 lastValue = rateLimit.lastValue;
             if (rateLimit.lastValue != 0) {
                 // decrement lastValue for passed time since last update
-                int256 decreaseBy = lastValue * int256(timestamp - lastUpdates[resourceId]) / int256(rateLimit.interval);
+                int256 decreaseBy = (lastValue * int256(timestamp - lastUpdates[resourceId])) /
+                    int256(rateLimit.interval);
 
-                if (lastValue > 0? decreaseBy >= lastValue: decreaseBy <= lastValue) {
+                if (lastValue > 0 ? decreaseBy >= lastValue : decreaseBy <= lastValue) {
                     lastValue = 0;
                 } else {
                     lastValue -= decreaseBy;
