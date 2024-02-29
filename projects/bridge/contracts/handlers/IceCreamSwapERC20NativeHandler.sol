@@ -167,7 +167,7 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
     }
 
     function _setFeePercentage(uint256 feePercentage) internal {
-        require(feePercentage >= 0 && feePercentage <= 10000, "invalid fee");
+        require(feePercentage <= 10000, "invalid fee");
         _feePercentage = feePercentage;
     }
 
