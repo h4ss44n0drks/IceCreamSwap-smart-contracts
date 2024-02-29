@@ -21,9 +21,9 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
     // Limit relayers number because proposal can fit only so much votes
     uint256 public constant MAX_RELAYERS = 200;
 
-    uint8 public _domainID;
+    uint8 public immutable _domainID;
     uint8 public _relayerThreshold;
-    uint40 public _expiry;
+    uint40 public immutable _expiry;
 
     enum ProposalStatus {
         Inactive,
