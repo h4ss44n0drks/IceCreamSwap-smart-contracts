@@ -28,19 +28,30 @@ async function main() {
 
   const tokens: { [symbol: string]: string } = {};
   for (const tokenConfig of bridgeConfig.bridgedTokens) {
-    const bridgedToken = await deployAndVerify("IceCreamSwapBridgedToken", [
-      tokenConfig.name,
-      tokenConfig.symbol,
-      bridgeConfig.bridgeAdmin,
-    ]);
-    await bridgedToken.grantRole(bridgedToken.MINTER_ROLE(), erc20Handler.target);
-    await bridgedToken.revokeRole(bridgedToken.DEFAULT_ADMIN_ROLE(), sender);
-    await bridge.adminSetResource(erc20Handler.target, tokenConfig.resourceId, bridgedToken.target);
-    await erc20Handler.setBurnable(bridgedToken.target, true);
+    let tokenAddress: string;
+    let burnable: boolean;
+    if (tokenConfig.deployedAddress) {
+      tokenAddress = tokenConfig.deployedAddress;
+      burnable = false;
+    } else {
+      const bridgedToken = await deployAndVerify("IceCreamSwapBridgedToken", [
+        tokenConfig.name,
+        tokenConfig.symbol,
+        bridgeConfig.bridgeAdmin,
+      ]);
+      await bridgedToken.grantRole(bridgedToken.MINTER_ROLE(), erc20Handler.target);
+      await bridgedToken.revokeRole(bridgedToken.DEFAULT_ADMIN_ROLE(), sender);
+      tokenAddress = bridgedToken.target.toString();
+      burnable = true;
+    }
+    await bridge.adminSetResource(erc20Handler.target, tokenConfig.resourceId, tokenAddress);
+    if (burnable) {
+      await erc20Handler.setBurnable(tokenAddress, true);
+    }
     await rateLimiter.addLimit(tokenConfig.resourceId, tokenConfig.rateLimit4h, 4 * 60 * 60);
     await rateLimiter.addLimit(tokenConfig.resourceId, tokenConfig.rateLimit1d, 24 * 60 * 60);
 
-    tokens[tokenConfig.symbol] = bridgedToken.target.toString();
+    tokens[tokenConfig.symbol] = tokenAddress;
   }
 
   await bridge.transferAdmin(bridgeConfig.bridgeAdmin);

@@ -1,4 +1,22 @@
-export const bridgeConfig = {
+type BridgeConfig = {
+  bridgeAdmin: string;
+  relayers: string[];
+  relayerThreshold: number;
+  baseFeeDolla: number;
+  tokenFeePercent: number;
+  bridgedTokens: BridgedToken[];
+};
+
+interface BridgedToken {
+  symbol: string;
+  name: string;
+  deployedAddress?: string; // If deployedAddress is set, deployment script will use the existing token.
+  resourceId: string;
+  rateLimit4h: string;
+  rateLimit1d: string;
+}
+
+export const bridgeConfig: BridgeConfig = {
   bridgeAdmin: "0xe020582E77b5aA9e471e1A127906476242d12cb7",
   relayers: ["0xe4B30ce8D7Fd3A546D8a2a785D7D6108cCD1D683", "0x79f0939bf2E1bD0a9b526BE1A5462976b03a1278"],
   relayerThreshold: 1,
@@ -8,6 +26,7 @@ export const bridgeConfig = {
     {
       symbol: "ICE",
       name: "IceCream",
+      deployedAddress: "0xc0E49f8C615d3d4c245970F6Dc528E4A47d69a44", // If deployedAddress is set, deployment script will use the existing token.
       resourceId: "0x0000000000000000000000B999Ea90607a826A3E6E6646B404c3C7d11fa39D02",
       rateLimit4h: "10000000000000000000000", // 10k
       rateLimit1d: "25000000000000000000000", // 25k
@@ -34,7 +53,7 @@ export const bridgeConfig = {
       rateLimit1d: "4000000000000000000", // 4
     },
   ],
-} as const;
+};
 
 export const dexConfig = {
   dexAdmin: "0x0075C169d8887F902cF881fEdC26AD0EbC7c8c19",
