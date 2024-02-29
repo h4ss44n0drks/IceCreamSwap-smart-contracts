@@ -9,21 +9,29 @@ export const bridgeConfig = {
       symbol: "ICE",
       name: "IceCream",
       resourceId: "0x0000000000000000000000B999Ea90607a826A3E6E6646B404c3C7d11fa39D02",
+      rateLimit4h: "10000000000000000000000", // 10k
+      rateLimit1d: "25000000000000000000000", // 25k
     },
     {
       symbol: "USDT",
       name: "Tether USD",
       resourceId: "0x0000000000000000000000C7E6d7E08A89209F02af47965337714153c529F001",
+      rateLimit4h: "10000000000000000000000", // 10k
+      rateLimit1d: "25000000000000000000000", // 25k
     },
     {
       symbol: "BNB",
       name: "Binance Token",
       resourceId: "0x0000000000000000000000bb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c01",
+      rateLimit4h: "20000000000000000000", // 20
+      rateLimit1d: "50000000000000000000", // 50
     },
     {
       symbol: "ETH",
       name: "Ether",
       resourceId: "0x00000000000000000000002170Ed0880ac9A755fd29B2688956BD959F933F801",
+      rateLimit4h: "1500000000000000000", // 1.5
+      rateLimit1d: "4000000000000000000", // 4
     },
   ],
 } as const;
