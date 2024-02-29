@@ -23,7 +23,7 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
 
     uint8 public immutable _domainID;
     uint8 public _relayerThreshold;
-    uint40 public immutable _expiry;
+    uint40 public _expiry;
 
     enum ProposalStatus {
         Inactive,
@@ -574,6 +574,15 @@ contract IceCreamSwapBridge is Pausable, AccessControl {
      */
     function setFeeMultiplierResource(bytes32 resourceId, uint256 feeMultiplier) external onlyAdmin {
         resourceFeeMultipliers[resourceId] = feeMultiplier;
+    }
+
+    /**
+        @notice Sets the proposal expiry. After a given time proposals with not enough votes or reverted executions
+        won't be able to be executed anymore.
+        @param expiry time in seconds till a proposal expires after it was first submitted.
+     */
+    function setExpiry(uint40 expiry) external onlyAdmin {
+        _expiry = expiry;
     }
 
     /**
