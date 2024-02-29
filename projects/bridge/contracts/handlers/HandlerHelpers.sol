@@ -12,7 +12,7 @@ import "../interfaces/IAccessControl.sol";
     @notice This contract is intended to be used with the Bridge contract.
  */
 abstract contract HandlerHelpers is IERCHandler {
-    address public _bridgeAddress;
+    address public immutable _bridgeAddress;
 
     // resourceID => token contract address
     mapping(bytes32 => address) public _resourceIDToTokenContractAddress;
