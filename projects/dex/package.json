@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "compile": "npx hardhat compile",
-    "deploy": "npx hardhat run scripts/deploy.ts"
+    "deploy": "npx hardhat run scripts/deploy.ts",
+    "getInitCodeHash": "npx hardhat run scripts/getInitCodeHash.ts"
   },
   "dependencies": {
     "@icecreamswap/common": "*"
