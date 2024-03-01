@@ -1,4 +1,4 @@
-import { deployAndVerify, farmConfig, getChainConfig } from "@icecreamswap/common";
+import { deployAndVerify, farmConfig, getChainConfig, transactSafe } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {
@@ -6,7 +6,7 @@ async function main() {
 
   const farm = await deployAndVerify("IceCreamFarm", [chainConfig.ice, 0, farmConfig.iceTreasury]);
 
-  await farm.transferOwnership(farmConfig.farmAdmin);
+  await transactSafe(farm.transferOwnership, [farmConfig.farmAdmin]);
 
   const contracts = {
     farm: farm.target,

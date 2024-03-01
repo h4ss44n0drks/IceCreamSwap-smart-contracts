@@ -1,4 +1,4 @@
-import { bridgeConfig, deployAndVerify, getChainConfig } from "@icecreamswap/common";
+import { bridgeConfig, deployAndVerify, getChainConfig, transactSafe } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {
@@ -18,7 +18,7 @@ async function main() {
   ]);
 
   const rateLimiter = await deployAndVerify("RateLimiter", [erc20Handler.target]);
-  erc20Handler.updateRateLimiter(rateLimiter.target);
+  await transactSafe(erc20Handler.updateRateLimiter, [rateLimiter.target])
 
   const tokens: { [symbol: string]: string } = {};
   for (const tokenConfig of bridgeConfig.bridgedTokens) {
@@ -35,22 +35,22 @@ async function main() {
         tokenConfig.symbol,
         bridgeConfig.bridgeAdmin,
       ]);
-      await bridgedToken.grantRole(bridgedToken.MINTER_ROLE(), erc20Handler.target);
-      await bridgedToken.revokeRole(bridgedToken.DEFAULT_ADMIN_ROLE(), defaultWallet.address);
+      await transactSafe(bridgedToken.grantRole, [bridgedToken.MINTER_ROLE(), erc20Handler.target]);
+      await transactSafe(bridgedToken.revokeRole, [bridgedToken.DEFAULT_ADMIN_ROLE(), defaultWallet.address])
       tokenAddress = bridgedToken.target.toString();
       mintable = true;
     }
-    await bridge.adminSetResource(erc20Handler.target, tokenConfig.resourceId, tokenAddress);
+    await transactSafe(bridge.adminSetResource, [erc20Handler.target, tokenConfig.resourceId, tokenAddress]);
     if (mintable) {
-      await erc20Handler.setBurnable(tokenAddress, true);
+      await transactSafe(erc20Handler.setBurnable, [tokenAddress, true]);
     }
-    await rateLimiter.addLimit(tokenConfig.resourceId, tokenConfig.rateLimit4h, 4 * 60 * 60);
-    await rateLimiter.addLimit(tokenConfig.resourceId, tokenConfig.rateLimit1d, 24 * 60 * 60);
+    await transactSafe(rateLimiter.addLimit, [tokenConfig.resourceId, tokenConfig.rateLimit4h, 4 * 60 * 60]);
+    await transactSafe(rateLimiter.addLimit, [tokenConfig.resourceId, tokenConfig.rateLimit1d, 24 * 60 * 60]);
 
     tokens[tokenConfig.symbol] = tokenAddress;
   }
 
-  await bridge.transferAdmin(bridgeConfig.bridgeAdmin);
+  await transactSafe(bridge.transferAdmin, [bridgeConfig.bridgeAdmin]);
   console.log(`transferred Bridge admin to ${bridgeConfig.bridgeAdmin}`);
 
   const contracts = {
