@@ -10,7 +10,6 @@ type BridgeConfig = {
 interface BridgedToken {
   symbol: string;
   name: string;
-  deployedAddress?: string; // If deployedAddress is set, deployment script will use the existing token.
   resourceId: string;
   rateLimit4h: string;
   rateLimit1d: string;
@@ -26,7 +25,6 @@ export const bridgeConfig: BridgeConfig = {
     {
       symbol: "ICE",
       name: "IceCream",
-      deployedAddress: "0xc0E49f8C615d3d4c245970F6Dc528E4A47d69a44", // If deployedAddress is set, deployment script will use the existing token.
       resourceId: "0x0000000000000000000000B999Ea90607a826A3E6E6646B404c3C7d11fa39D02",
       rateLimit4h: "10000000000000000000000", // 10k
       rateLimit1d: "25000000000000000000000", // 25k

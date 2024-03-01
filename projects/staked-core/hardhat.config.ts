@@ -1,17 +1,3 @@
-import { HardhatUserConfig } from "hardhat/config";
-import { default as hardhatConfigTemplate } from "@icecreamswap/common/src/hardhat.config";
+import { getHardhatConfig } from "@icecreamswap/common/src/getHardhatConfig";
 
-const config: HardhatUserConfig = {
-  ...hardhatConfigTemplate,
-  solidity: {
-    version: "0.8.17",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 99999,
-      },
-    },
-  },
-};
-
-export default config;
+export default getHardhatConfig(["0.8.17"]);
