@@ -1,9 +1,9 @@
 pragma solidity =0.5.16;
 
-import "./interfaces/IUniswapV2ERC20.sol";
+import "./interfaces/IIceCreamSwapV2ERC20.sol";
 import "./libraries/SafeMath.sol";
 
-contract UniswapV2ERC20 is IUniswapV2ERC20 {
+contract IceCreamSwapV2ERC20 is IIceCreamSwapV2ERC20 {
     using SafeMath for uint256;
 
     string public constant name = "icecreamswap.com LP";
@@ -87,7 +87,7 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         bytes32 r,
         bytes32 s
     ) external {
-        require(deadline >= block.timestamp, "UniswapV2: EXPIRED");
+        require(deadline >= block.timestamp, "IceCreamSwapV2: EXPIRED");
         bytes32 digest = keccak256(
             abi.encodePacked(
                 "\x19\x01",
@@ -96,7 +96,7 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
             )
         );
         address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress != address(0) && recoveredAddress == owner, "UniswapV2: INVALID_SIGNATURE");
+        require(recoveredAddress != address(0) && recoveredAddress == owner, "IceCreamSwapV2: INVALID_SIGNATURE");
         _approve(owner, spender, value);
     }
 }
