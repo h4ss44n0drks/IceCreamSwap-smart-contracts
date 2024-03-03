@@ -11,6 +11,7 @@ async function main() {
     1_000,
     chainConfig.oneDollarInNative,
   ]);
+  // const bridge = (await ethers.getContractFactory("IceCreamSwapBridge")).attach("0xd65CceCFf339e5680b1A1E7821421932cc2b114f")
 
   const erc20Handler = await deployAndVerify("IceCreamSwapERC20NativeHandler", [
     bridge.target,
@@ -22,7 +23,7 @@ async function main() {
 
   const tokens: { [symbol: string]: string } = {};
   for (const tokenConfig of bridgeConfig.bridgedTokens) {
-    const userTokenInput = prompt(`Deploy Token ${tokenConfig.name}? [y,n,{existing address}]`)
+    const userTokenInput = prompt(`Deploy Token ${tokenConfig.name}? [y,n,{existing address}]: `)
     if (userTokenInput.toLowerCase() === "n") continue;
     let tokenAddress: string;
     let mintable: boolean;
