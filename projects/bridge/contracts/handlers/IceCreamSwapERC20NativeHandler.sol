@@ -40,6 +40,11 @@ contract IceCreamSwapERC20NativeHandler is IDepositExecute, HandlerHelpers, ERC2
     }
 
     /**
+        @notice This is just for being able to receive the native token for initially filling the handler reserves.
+     */
+    receive() payable {}
+
+    /**
         @notice A deposit is initiatied by making a deposit in the Bridge contract.
         @param resourceID ResourceID used to find address of token to be used for deposit.
         @param depositer Address of account making the deposit in the Bridge contract.
