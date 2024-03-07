@@ -13,7 +13,7 @@ export const deployAndVerify = async (contractName: string, constructorArguments
     data: deploymentTx.data
   })
   const feeData = await ethers.provider.getFeeData()
-  const deploymentCost = gasEstimate * feeData.gasPrice!
+  const deploymentCost = gasEstimate * (feeData.maxFeePerGas? feeData.maxFeePerGas + feeData.maxPriorityFeePerGas!: feeData.gasPrice!)
   const balance = await ethers.provider.getBalance((await ethers.getSigners())[0].address)
   const minimumBalance = deploymentCost * 200n / 100n
   if (minimumBalance > balance) {

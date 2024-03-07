@@ -7,7 +7,7 @@ const prompt = prompt_sync();
 export const transactSafe = async (contractMethod: ContractMethod, contractParameters: any[] = []) => {
   const gasEstimate = await contractMethod.estimateGas(...contractParameters)
   const feeData = await ethers.provider.getFeeData()
-  const deploymentCost = gasEstimate * feeData.gasPrice!
+  const deploymentCost = gasEstimate * (feeData.maxFeePerGas? feeData.maxFeePerGas + feeData.maxPriorityFeePerGas!: feeData.gasPrice!)
   const balance = await ethers.provider.getBalance((await ethers.getSigners())[0].address)
   const minimumBalance = deploymentCost * 120n / 100n
   if (minimumBalance > balance) {
