@@ -1,4 +1,15 @@
 const chainConfigs = {
+  hardhat: {
+    chainId: -1,
+    url: "",
+    explorer: "",
+    explorerApi: null,
+    explorerApiKey: null,
+    ice: "0x0000000000000000000000000000000000000321",
+    bridgeDomainId: 200,
+    oneDollarInNative: "500000000000000000",
+    weth: "0x0000000000000000000000000000000000000123",
+  },
   bsc: {
     chainId: 56,
     url: "https://rpc.ankr.com/bsc",
@@ -155,16 +166,25 @@ const chainConfigs = {
     oneDollarInNative: "-1",
     weth: "0x5eB65C6feC23d4eb36bC9966aA110Fe13FBd7c7F",
   },
-  hardhat: {
-    chainId: -1,
-    url: "",
-    explorer: "",
-    explorerApi: null,
-    explorerApiKey: null,
-    ice: "0x0000000000000000000000000000000000000321",
-    bridgeDomainId: 200,
-    oneDollarInNative: "500000000000000000",
-    weth: "0x0000000000000000000000000000000000000123",
+  qitmeer: {
+    chainId: 813,
+    url: "https://mainnet.meerlabs.com",
+    explorer: "https://qng.qitmeer.io",
+    explorerApi: "https://qng.qitmeer.io/api",
+    explorerApiKey: "NoKeyRequired",
+    bridgeDomainId: 14,
+    oneDollarInNative: "15000000000000000000",
+    weth: "0x470cBFB236860eb5257bBF78715FB5bd77119C2F",
+  },
+  blast: {
+    chainId: 81457,
+    url: "https://blast.blockpi.network/v1/rpc/public",
+    explorer: "https://blastscan.io/",
+    explorerApi: "https://api.blastscan.io/api",
+    explorerApiKey: process.env.EXPLORER_API_KEY_BLAST,
+    bridgeDomainId: 15,
+    oneDollarInNative: "250000000000000",
+    weth: "0x4300000000000000000000000000000000000004",
   },
 } as const;
 
