@@ -1,4 +1,5 @@
 import { ethers, network } from "hardhat";
+import hre from 'hardhat'
 import { chainConfigs } from "./index";
 import prompt_sync from "prompt-sync";
 
@@ -15,9 +16,29 @@ export const getChainConfig = async () => {
 
   if (chainName !== "hardhat") {
     if (prompt(`Network is ${chainName} are you sure you want to continue? [y,n]: `).toLowerCase() !== "y") {
-      return;
+      throw new Error(`Aborted`);
     }
   }
+
+  const explorerApiUri = hre.config.etherscan.customChains.find(chain => chain.network === chainName)?.urls.apiURL
+  let explorerApiWorking = false
+  if (explorerApiUri) {
+    const response = await fetch(explorerApiUri + '?module=block&action=eth_block_number')
+    if (response.ok) {
+      const responseJson = await response.json()
+      if (responseJson.result) {
+        explorerApiWorking = true
+      }
+    }
+  }
+
+  if (!explorerApiWorking && chainName !== "hardhat") {
+    if (prompt(`Block explorer API seems to not be configured or working. Continue? [y,n]: `).toLowerCase() !== "y") {
+      throw new Error(`Aborted`);
+    }
+  }
+
+
   return {
     chainConfig: config,
     prompt,
