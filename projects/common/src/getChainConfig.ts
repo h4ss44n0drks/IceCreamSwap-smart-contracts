@@ -1,5 +1,5 @@
 import { ethers, network } from "hardhat";
-import hre from 'hardhat'
+import hre from "hardhat";
 import { chainConfigs } from "./index";
 import prompt_sync from "prompt-sync";
 
@@ -20,14 +20,15 @@ export const getChainConfig = async () => {
     }
   }
 
-  const explorerApiUri = hre.config.etherscan.customChains.find(chain => chain.network === chainName)?.urls.apiURL
-  let explorerApiWorking = false
+  const explorerApiUri = hre.config.etherscan.customChains.find((chain) => chain.network === chainName)?.urls.apiURL;
+  let explorerApiWorking = false;
   if (explorerApiUri) {
-    const response = await fetch(explorerApiUri + '?module=block&action=eth_block_number')
+    // @ts-ignore
+    const response = await fetch(explorerApiUri + "?module=block&action=eth_block_number");
     if (response.ok) {
-      const responseJson = await response.json()
+      const responseJson = await response.json();
       if (responseJson.result) {
-        explorerApiWorking = true
+        explorerApiWorking = true;
       }
     }
   }
@@ -38,11 +39,10 @@ export const getChainConfig = async () => {
     }
   }
 
-
   return {
     chainConfig: config,
     prompt,
     chainName,
     defaultWallet,
-  }
-}
+  };
+};

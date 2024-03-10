@@ -2,7 +2,7 @@ import { deployAndVerify, dexConfig, getChainConfig } from "@icecreamswap/common
 import { writeFileSync } from "fs";
 
 async function main() {
-  const {chainConfig, chainName} = await getChainConfig()
+  const { chainConfig, chainName } = await getChainConfig();
 
   const factory = await deployAndVerify("IceCreamSwapV2Factory", [dexConfig.dexAdmin]);
 

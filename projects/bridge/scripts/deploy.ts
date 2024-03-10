@@ -2,7 +2,7 @@ import { bridgeConfig, deployAndVerify, getChainConfig, transactSafe } from "@ic
 import { writeFileSync } from "fs";
 
 async function main() {
-  const {chainConfig, prompt, chainName, defaultWallet} = await getChainConfig()
+  const { chainConfig, prompt, chainName, defaultWallet } = await getChainConfig();
 
   const bridge = await deployAndVerify("IceCreamSwapBridge", [
     chainConfig.bridgeDomainId,
@@ -19,17 +19,17 @@ async function main() {
   ]);
 
   const rateLimiter = await deployAndVerify("RateLimiter", [erc20Handler.target]);
-  await transactSafe(erc20Handler.updateRateLimiter, [rateLimiter.target])
+  await transactSafe(erc20Handler.updateRateLimiter, [rateLimiter.target]);
 
   const tokens: { [symbol: string]: string } = {};
   for (const tokenConfig of bridgeConfig.bridgedTokens) {
-    const userTokenInput = prompt(`Deploy Token ${tokenConfig.name}? [y,n,{existing address}]: `)
+    const userTokenInput = prompt(`Deploy Token ${tokenConfig.name}? [y,n,{existing address}]: `);
     if (userTokenInput.toLowerCase() === "n") continue;
     let tokenAddress: string;
     let mintable: boolean;
     if (userTokenInput.toLowerCase() !== "y") {
       tokenAddress = userTokenInput;
-      mintable = prompt('Should the token be configured as mintable? [y,n]: ').toLowerCase() === 'y';
+      mintable = prompt("Should the token be configured as mintable? [y,n]: ").toLowerCase() === "y";
     } else {
       const bridgedToken = await deployAndVerify("IceCreamSwapBridgedToken", [
         tokenConfig.name,
@@ -37,7 +37,7 @@ async function main() {
         bridgeConfig.bridgeAdmin,
       ]);
       await transactSafe(bridgedToken.grantRole, [bridgedToken.MINTER_ROLE(), erc20Handler.target]);
-      await transactSafe(bridgedToken.revokeRole, [bridgedToken.DEFAULT_ADMIN_ROLE(), defaultWallet.address])
+      await transactSafe(bridgedToken.revokeRole, [bridgedToken.DEFAULT_ADMIN_ROLE(), defaultWallet.address]);
       tokenAddress = bridgedToken.target.toString();
       mintable = true;
     }

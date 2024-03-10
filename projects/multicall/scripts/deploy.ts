@@ -2,7 +2,7 @@ import { deployAndVerify, getChainConfig } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {
-  const { chainName} = await getChainConfig()
+  const { chainName } = await getChainConfig();
 
   const multicall = await deployAndVerify("Multicall3", []);
 

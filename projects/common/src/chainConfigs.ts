@@ -37,7 +37,7 @@ const chainConfigs = {
     url: "https://rpc.ankr.com/xdc",
     explorer: "",
     explorerApi: null,
-    explorerApiKey: null,  // XDC block explorer seems to have no etherscan compatible API
+    explorerApiKey: null, // XDC block explorer seems to have no etherscan compatible API
     ice: "0x54051D9DbE99687867090d95fe15C3D3E35512Ba",
     bridgeDomainId: 6,
     oneDollarInNative: "25000000000000000000",
@@ -70,7 +70,7 @@ const chainConfigs = {
     url: "https://mainnet.telos.net/evm",
     explorer: "",
     explorerApi: null,
-    explorerApiKey: null,  // does not seem to have etherscan compatible API
+    explorerApiKey: null, // does not seem to have etherscan compatible API
     ice: "0xB25cB6a275a8D6a613228FB161eB3627b50EB696",
     bridgeDomainId: 9,
     oneDollarInNative: "5000000000000000000",

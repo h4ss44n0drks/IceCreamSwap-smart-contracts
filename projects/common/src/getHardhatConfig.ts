@@ -7,7 +7,7 @@ import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-verify";
 import { ChainConfig } from "@nomicfoundation/hardhat-verify/src/types";
 
-export const getHardhatConfig = (compilerVersions: string[]) => {
+export const getHardhatConfig = (compilerVersions: string[], optimizationRuns: number = 1_000_000) => {
   return {
     defaultNetwork: "hardhat",
     networks: Object.entries(chainConfigs).reduce((acc: { [index: string]: {} }, chainObj) => {
@@ -21,15 +21,15 @@ export const getHardhatConfig = (compilerVersions: string[]) => {
       return acc;
     }, {}),
     solidity: {
-      compilers: compilerVersions.map(version => ({
+      compilers: compilerVersions.map((version) => ({
         version: version,
         settings: {
           optimizer: {
             enabled: true,
-            runs: 99999,
+            runs: optimizationRuns,
           },
         },
-      }))
+      })),
     },
     etherscan: {
       apiKey: Object.entries(chainConfigs).reduce((acc: { [index: string]: string }, chainObj) => {
@@ -52,5 +52,5 @@ export const getHardhatConfig = (compilerVersions: string[]) => {
         return acc;
       }, [] as ChainConfig[]),
     },
-  } as HardhatUserConfig
-}
+  } as HardhatUserConfig;
+};

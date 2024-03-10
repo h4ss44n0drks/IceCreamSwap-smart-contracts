@@ -2,7 +2,7 @@ import { deployAndVerify, farmConfig, getChainConfig, transactSafe } from "@icec
 import { writeFileSync } from "fs";
 
 async function main() {
-  const {chainConfig, chainName} = await getChainConfig()
+  const { chainConfig, chainName } = await getChainConfig();
 
   const farm = await deployAndVerify("IceCreamFarm", [chainConfig.ice, 0, farmConfig.iceTreasury]);
 

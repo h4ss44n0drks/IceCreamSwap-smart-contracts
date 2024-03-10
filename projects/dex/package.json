@@ -1,5 +1,5 @@
 {
-  "name": "dex",
+  "name": "@icecreamswap/dex",
   "description": "Exchange contracts from IceCreamSwap v2",
   "version": "2.0.0",
   "license": "GPL-3.0/MIT",
