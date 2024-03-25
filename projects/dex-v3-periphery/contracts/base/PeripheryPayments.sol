@@ -46,7 +46,7 @@ abstract contract PeripheryPayments is IPeripheryPayments, PeripheryImmutableSta
     /// @param recipient The entity that will receive payment
     /// @param value The amount to pay
     function pay(address token, address payer, address recipient, uint256 value) internal {
-        if (token == WETH9 && address(this).balance >= value) {
+        if (payer != address(this) && token == WETH9 && address(this).balance >= value) {
             // pay with WETH9
             IWETH9(WETH9).deposit{value: value}(); // wrap only what is needed to pay
             IWETH9(WETH9).transfer(recipient, value);
