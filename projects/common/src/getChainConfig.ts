@@ -22,14 +22,11 @@ export const getChainConfig = async () => {
 
   const explorerApiUri = hre.config.etherscan.customChains.find((chain) => chain.network === chainName)?.urls.apiURL;
   let explorerApiWorking = false;
-  if (explorerApiUri) {
+  if (explorerApiUri && config.explorerApiKey) {
     // @ts-ignore
-    const response = await fetch(explorerApiUri + "?module=block&action=eth_block_number");
+    const response = await fetch(explorerApiUri + "?module=block&action=eth_block_number&apikey=" + config.explorerApiKey);
     if (response.ok) {
-      const responseJson = await response.json();
-      if (responseJson.result) {
-        explorerApiWorking = true;
-      }
+      explorerApiWorking = true;
     }
   }
 

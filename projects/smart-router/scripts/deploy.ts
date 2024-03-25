@@ -43,9 +43,9 @@ async function main() {
   );
 
   const contracts = {
-    SmartRouter: smartRouter.address,
-    SmartRouterHelper: smartRouterHelper.address,
-    MixedRouteQuoterV1: mixedRouteQuoterV1.address,
+    SmartRouter: smartRouter.target,
+    SmartRouterHelper: smartRouterHelper.target,
+    MixedRouteQuoterV1: mixedRouteQuoterV1.target,
   };
 
   writeFileSync(`./deployments/${chainName}.json`, JSON.stringify(contracts, null, 2));
