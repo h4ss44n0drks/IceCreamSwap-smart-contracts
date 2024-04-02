@@ -186,6 +186,16 @@ const chainConfigs = {
     oneDollarInNative: "250000000000000",
     weth: "0x4300000000000000000000000000000000000004",
   },
+  boba_eth: {
+    chainId: 288,
+    url: "https://mainnet.boba.network",
+    explorer: "https://bobascan.com",
+    explorerApi: "https://api.routescan.io/v2/network/mainnet/evm/1/etherscan/api",
+    explorerApiKey: "YourApiKeyToken",
+    bridgeDomainId: 16,
+    oneDollarInNative: "250000000000000",
+    weth: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+  },
 } as const;
 
 export default chainConfigs;
