@@ -25,8 +25,8 @@ async function main() {
   );
 
   const contracts = {
-    SmartRouter: smartRouter.address,
-    SmartRouterHelper: smartRouterHelper.address,
+    SmartRouter: smartRouter.target,
+    SmartRouterHelper: smartRouterHelper.target,
   };
 
   writeFileSync(`./deployments/${chainName}V2Only.json`, JSON.stringify(contracts, null, 2));
