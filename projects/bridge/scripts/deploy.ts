@@ -51,6 +51,9 @@ async function main() {
     tokens[tokenConfig.symbol] = tokenAddress;
   }
 
+  await transactSafe(rateLimiter.transferOwnership, [bridgeConfig.bridgeAdmin]);
+  console.log(`transferred RateLimiter admin to ${bridgeConfig.bridgeAdmin}`);
+
   await transactSafe(bridge.transferAdmin, [bridgeConfig.bridgeAdmin]);
   console.log(`transferred Bridge admin to ${bridgeConfig.bridgeAdmin}`);
 
