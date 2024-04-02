@@ -2,9 +2,12 @@ import { deployAndVerify, farmConfig, getChainConfig, transactSafe } from "@icec
 import { writeFileSync } from "fs";
 
 async function main() {
-  const { chainConfig, chainName } = await getChainConfig();
+  const { chainName } = await getChainConfig();
 
-  const farm = await deployAndVerify("IceCreamFarm", [chainConfig.ice, 0, farmConfig.iceTreasury]);
+  const bridgeDeployedContracts = await import(`@icecreamswap/bridge/deployments/${chainName}.json`);
+  const ice = bridgeDeployedContracts.tokens.ICE;
+
+  const farm = await deployAndVerify("IceCreamFarm", [ice, 0, farmConfig.iceTreasury]);
 
   await transactSafe(farm.transferOwnership, [farmConfig.farmAdmin]);
 
