@@ -17,7 +17,13 @@ import "./interfaces/IWETH.sol";
 import "./utils/Multicall.sol";
 import "./Enumerable.sol";
 
-contract IceCreamSwapLiquidityFarmV3 is INonfungiblePositionManagerStruct, Multicall, Ownable, ReentrancyGuard, Enumerable {
+contract IceCreamSwapLiquidityFarmV3 is
+    INonfungiblePositionManagerStruct,
+    Multicall,
+    Ownable,
+    ReentrancyGuard,
+    Enumerable
+{
     using SafeERC20 for IERC20;
     using SafeCast for uint256;
     struct PoolInfo {

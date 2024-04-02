@@ -1,9 +1,7 @@
 import { ethers } from "hardhat";
 import { tryVerify } from "./verify";
-import prompt_sync from "prompt-sync";
+import prompt from "./nodePrompt";
 import { Libraries } from "@nomicfoundation/hardhat-ethers/types";
-
-const prompt = prompt_sync();
 
 export const deployAndVerify = async (
   contractName: string,
@@ -23,7 +21,7 @@ export const deployAndVerify = async (
   const balance = await ethers.provider.getBalance((await ethers.getSigners())[0].address);
   const minimumBalance = (deploymentCost * 200n) / 100n;
   if (minimumBalance > balance) {
-    prompt(
+    await prompt(
       `Deployer wallet balance to low for deployment. missing ${minimumBalance - balance} wei of native token. Please refill and hit enter`,
     );
   }

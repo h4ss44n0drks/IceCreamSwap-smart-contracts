@@ -5,3 +5,4 @@ export * from "./deployAndVerify";
 export * from "./transactSafe";
 export * from "./getHardhatConfig";
 export * from "./getChainConfig";
+export { default as nodePrompt } from "./nodePrompt";

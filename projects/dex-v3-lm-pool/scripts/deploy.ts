@@ -1,4 +1,4 @@
-import { deployAndVerify, getChainConfig, transactSafe } from "@icecreamswap/common";
+import { deployAndVerify, getChainConfig } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 import { abi as V3FactoryABI } from "@icecreamswap/dex-v3-core/artifacts/contracts/IceCreamSwapV3Factory.sol/IceCreamSwapV3Factory.json";
 import { abi as V3MasterchefABI } from "@icecreamswap/liquidity-farms-v3/artifacts/contracts/IceCreamSwapLiquidityFarmV3.sol/IceCreamSwapLiquidityFarmV3.json";
@@ -6,7 +6,7 @@ import { ethers } from "hardhat";
 
 async function main() {
   const { chainName } = await getChainConfig();
-  const signer = (await ethers.getSigners())[0]
+  const signer = (await ethers.getSigners())[0];
 
   const v3DeployedContracts = await import(`@icecreamswap/dex-v3-core/deployments/${chainName}.json`);
   const mcV3DeployedContracts = await import(`@icecreamswap/liquidity-farms-v3/deployments/${chainName}.json`);

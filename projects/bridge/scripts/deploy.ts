@@ -1,8 +1,8 @@
-import { bridgeConfig, deployAndVerify, getChainConfig, transactSafe } from "@icecreamswap/common";
+import { bridgeConfig, deployAndVerify, getChainConfig, transactSafe, nodePrompt } from "@icecreamswap/common";
 import { writeFileSync } from "fs";
 
 async function main() {
-  const { chainConfig, prompt, chainName, defaultWallet } = await getChainConfig();
+  const { chainConfig, chainName, defaultWallet } = await getChainConfig();
 
   const bridge = await deployAndVerify("IceCreamSwapBridge", [
     chainConfig.bridgeDomainId,
@@ -23,13 +23,13 @@ async function main() {
 
   const tokens: { [symbol: string]: string } = {};
   for (const tokenConfig of bridgeConfig.bridgedTokens) {
-    const userTokenInput = prompt(`Deploy Token ${tokenConfig.name}? [y,n,{existing address}]: `);
+    const userTokenInput = await nodePrompt(`Deploy Token ${tokenConfig.name}? [y,n,{existing address}]: `);
     if (userTokenInput.toLowerCase() === "n") continue;
     let tokenAddress: string;
     let mintable: boolean;
     if (userTokenInput.toLowerCase() !== "y") {
       tokenAddress = userTokenInput;
-      mintable = prompt("Should the token be configured as mintable? [y,n]: ").toLowerCase() === "y";
+      mintable = (await nodePrompt("Should the token be configured as mintable? [y,n]: ")).toLowerCase() === "y";
     } else {
       const bridgedToken = await deployAndVerify("IceCreamSwapBridgedToken", [
         tokenConfig.name,

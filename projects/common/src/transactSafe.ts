@@ -1,8 +1,6 @@
 import { ethers } from "hardhat";
-import prompt_sync from "prompt-sync";
 import { ContractMethod, TransactionResponse } from "ethers";
-
-const prompt = prompt_sync();
+import prompt from "./nodePrompt";
 
 export const transactSafe = async (contractMethod: ContractMethod, contractParameters: any[] = []) => {
   const gasEstimate = await contractMethod.estimateGas(...contractParameters);
@@ -12,7 +10,7 @@ export const transactSafe = async (contractMethod: ContractMethod, contractParam
   const balance = await ethers.provider.getBalance((await ethers.getSigners())[0].address);
   const minimumBalance = (deploymentCost * 120n) / 100n;
   if (minimumBalance > balance) {
-    prompt(
+    await prompt(
       `Deployer wallet balance to low for contract interaction. missing ${minimumBalance - balance} wei of native token. Please refill and hit enter`,
     );
   }

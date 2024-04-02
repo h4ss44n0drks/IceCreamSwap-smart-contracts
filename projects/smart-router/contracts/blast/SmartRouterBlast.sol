@@ -16,7 +16,17 @@ contract SmartRouterBlast is IceCreamSwapSmartRouter {
         address _stableFactory,
         address _stableInfo,
         address _WETH9
-    ) IceCreamSwapSmartRouter(_factoryV2, _deployer, _factoryV3, _positionManager, _stableFactory, _stableInfo, _WETH9) {
+    )
+        IceCreamSwapSmartRouter(
+            _factoryV2,
+            _deployer,
+            _factoryV3,
+            _positionManager,
+            _stableFactory,
+            _stableInfo,
+            _WETH9
+        )
+    {
         BLAST.configureClaimableYield();
         BLAST.configureClaimableGas();
     }
