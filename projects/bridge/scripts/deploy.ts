@@ -8,7 +8,7 @@ async function main() {
     chainConfig.bridgeDomainId,
     bridgeConfig.relayers,
     1,
-    1_000,
+    1_000_000_000,
     chainConfig.oneDollarInNative,
   ]);
   // const bridge = (await ethers.getContractFactory("IceCreamSwapBridge")).attach("0xd65CceCFf339e5680b1A1E7821421932cc2b114f")

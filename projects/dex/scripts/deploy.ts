@@ -8,9 +8,12 @@ async function main() {
 
   const router = await deployAndVerify("IceCreamSwapV2Router", [factory.target, chainConfig.weth]);
 
+  const initCodeHash = await factory.INIT_CODE_HASH()
+
   const contracts = {
     factory: factory.target.toString(),
     router: router.target.toString(),
+    initCodeHash
   };
   writeFileSync(`./deployments/${chainName}.json`, JSON.stringify(contracts, null, 2));
 }
