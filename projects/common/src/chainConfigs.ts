@@ -196,6 +196,16 @@ const chainConfigs = {
     oneDollarInNative: "250000000000000",
     weth: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
   },
+  degen: {
+    chainId: 666666666,
+    url: "https://rpc.degen.tips",
+    explorer: "https://explorer.degen.tips",
+    explorerApi: "https://explorer.degen.tips/api",
+    explorerApiKey: "NoKeyRequired",
+    bridgeDomainId: 17,
+    oneDollarInNative: "20000000000000000000",
+    weth: "0xEb54dACB4C2ccb64F8074eceEa33b5eBb38E5387",
+  },
 } as const;
 
 export default chainConfigs;
