@@ -206,6 +206,16 @@ const chainConfigs = {
     oneDollarInNative: "20000000000000000000",
     weth: "0xEb54dACB4C2ccb64F8074eceEa33b5eBb38E5387",
   },
+  arbitrum: {
+    chainId: 42161,
+    url: "https://arbitrum-one.publicnode.com",
+    explorer: "https://arbiscan.io",
+    explorerApi: "https://api.arbiscan.io",
+    explorerApiKey: process.env.EXPLORER_API_KEY_ARBITRUM,
+    bridgeDomainId: 19,
+    oneDollarInNative: "340000000000000",
+    weth: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+  },
 } as const;
 
 export default chainConfigs;
