@@ -18,7 +18,7 @@ const chainConfigs = {
     explorerApiKey: process.env.EXPLORER_API_KEY_BSC,
     ice: "0xce6c9c70f91c6797873EFC80505f972290A88f5D",
     bridgeDomainId: 1,
-    oneDollarInNative: "2500000000000000",
+    oneDollarInNative: "1800000000000000",
     weth: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
   },
   core: {
