@@ -295,7 +295,38 @@ const chainConfigs = {
     bridgeDomainId: 27,
     oneDollarInNative: "28700000000000000",
     weth: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+  },
+  kroma: {
+    chainId: 255,
+    url: "https://1rpc.io/kroma",
+    explorer: "https://kromascan.com",
+    explorerApi: "https://api.kromascan.com/api",
+    explorerApiKey: process.env.EXPLORER_API_KEY_KROMA,
+    bridgeDomainId: 28,
+    oneDollarInNative: "340000000000000",
+    weth: "0x4200000000000000000000000000000000000001",
+  },
+  mode: {
+    chainId: 34443,
+    url: "https://1rpc.io/mode",
+    explorer: "https://explorer.mode.network",
+    explorerApi: "https://explorer.mode.network/api",
+    explorerApiKey: "NoKeyRequired",
+    bridgeDomainId: 29,
+    oneDollarInNative: "340000000000000",
+    weth: "0x4200000000000000000000000000000000000006",
+  },
+  moonriver: {
+    chainId: 1285,
+    url: "https://moonriver-rpc.dwellir.com",
+    explorer: "https://moonriver.moonscan.io",
+    explorerApi: "https://api-moonriver.moonscan.io/api",
+    explorerApiKey: process.env.EXPLORER_API_KEY_MOONRIVER,
+    bridgeDomainId: 30,
+    oneDollarInNative: "73583284916763056",
+    weth: "0x98878B06940aE243284CA214f92Bb71a2b032B8A",
   }
+
 } as const;
 
 export default chainConfigs;
