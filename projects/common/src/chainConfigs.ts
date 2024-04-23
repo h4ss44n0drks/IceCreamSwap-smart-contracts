@@ -12,7 +12,7 @@ const chainConfigs = {
   },
   bsc: {
     chainId: 56,
-    url: "https://rpc.ankr.com/bsc",
+    url: "https://bsc-dataseed.binance.org",
     explorer: "https://bscscan.com",
     explorerApi: "https://api.bscscan.com/api",
     explorerApiKey: process.env.EXPLORER_API_KEY_BSC,
@@ -325,7 +325,17 @@ const chainConfigs = {
     bridgeDomainId: 30,
     oneDollarInNative: "73583284916763056",
     weth: "0x98878B06940aE243284CA214f92Bb71a2b032B8A",
-  }
+  },
+  metis : {
+    chainId: 1088,
+    url: "https://andromeda.metis.io/?owner=1088",
+    explorer: "https://andromeda-explorer.metis.io",
+    explorerApi: "https://andromeda-explorer.metis.io/api",
+    explorerApiKey: "NoKeyRequired",
+    bridgeDomainId: 31,
+    oneDollarInNative: "14595344085236800",
+    weth: "0x75cb093e4d61d2a2e65d8e0bbb01de8d89b53481",
+  },
 
 } as const;
 
