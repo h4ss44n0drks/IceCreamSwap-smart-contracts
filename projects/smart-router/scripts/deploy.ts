@@ -1,5 +1,5 @@
 import { writeFileSync } from "fs";
-import { deployAndVerify, getChainConfig } from "@icecreamswap/common/dist";
+import { deployAndVerify, getChainConfig } from "@icecreamswap/common";
 
 async function main() {
   // Remember to update the init code hash in SC for different chains before deploying

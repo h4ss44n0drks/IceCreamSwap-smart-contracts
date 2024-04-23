@@ -19,7 +19,7 @@ export const deployAndVerify = async (
   const deploymentCost =
     gasEstimate * (feeData.maxFeePerGas ? feeData.maxFeePerGas + feeData.maxPriorityFeePerGas! : feeData.gasPrice!);
   const balance = await ethers.provider.getBalance((await ethers.getSigners())[0].address);
-  const minimumBalance = (deploymentCost * 200n) / 100n;
+  const minimumBalance = (deploymentCost * 150n) / 100n;
   if (minimumBalance > balance) {
     await prompt(
       `Deployer wallet balance to low for deployment. missing ${minimumBalance - balance} wei of native token. Please refill and hit enter`,
