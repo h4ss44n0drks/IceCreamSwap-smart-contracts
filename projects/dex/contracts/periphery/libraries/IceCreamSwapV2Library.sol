@@ -24,7 +24,7 @@ library IceCreamSwapV2Library {
                         hex"ff",
                         factory,
                         keccak256(abi.encodePacked(token0, token1)),
-                        hex"0b6b499b70a5c571677814eaf859942ef2336f97496a25dfb5a151a02e7f1c5d" // init code hash
+                        hex"0437378fc27e93c612c5c385779bf540ca2064b54705e48c313aa216da380100" // init code hash
                     )
                 )
             )

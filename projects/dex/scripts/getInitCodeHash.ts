@@ -7,7 +7,7 @@ async function main() {
     throw "not Hardhat";
   }
 
-  const factory = await deployAndVerify("IceCreamSwapV2Factory", ["0x0000000000000000000000000000000000000000"]);
+  const factory = await deployAndVerify("IceCreamSwapV2Factory", ["0x0000000000000000000000000000000000000000", 0]);
 
   console.log("Init code hash:", await factory.INIT_CODE_HASH());
 }

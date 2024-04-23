@@ -4,16 +4,16 @@ import { writeFileSync } from "fs";
 async function main() {
   const { chainConfig, chainName } = await getChainConfig();
 
-  const factory = await deployAndVerify("IceCreamSwapV2Factory", [dexConfig.dexAdmin]);
+  const factory = await deployAndVerify("IceCreamSwapV2Factory", [dexConfig.dexAdmin, 50]);
 
   const router = await deployAndVerify("IceCreamSwapV2Router", [factory.target, chainConfig.weth]);
 
-  const initCodeHash = await factory.INIT_CODE_HASH()
+  const initCodeHash = await factory.INIT_CODE_HASH();
 
   const contracts = {
     factory: factory.target.toString(),
     router: router.target.toString(),
-    initCodeHash
+    initCodeHash,
   };
   writeFileSync(`./deployments/${chainName}.json`, JSON.stringify(contracts, null, 2));
 }
