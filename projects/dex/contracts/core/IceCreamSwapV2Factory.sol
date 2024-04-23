@@ -5,6 +5,7 @@ import "./IceCreamSwapV2Pair.sol";
 
 contract IceCreamSwapV2Factory is IIceCreamSwapV2Factory {
     address public feeTo;
+    uint8 public feeProtocol;
     address public feeToSetter;
 
     bytes32 public constant INIT_CODE_HASH = keccak256(abi.encodePacked(type(IceCreamSwapV2Pair).creationCode));
@@ -14,12 +15,18 @@ contract IceCreamSwapV2Factory is IIceCreamSwapV2Factory {
 
     event PairCreated(address indexed token0, address indexed token1, address pair, uint256);
 
-    constructor(address _feeToSetter) public {
+    constructor(address _feeToSetter, uint8 _feeProtocol) public {
+        require(_feeProtocol <= 100, "IceCreamSwapV2: FEE_TO_HIGH");
         feeToSetter = _feeToSetter;
+        feeProtocol = _feeProtocol;
     }
 
     function allPairsLength() external view returns (uint256) {
         return allPairs.length;
+    }
+
+    function getProtocolFee() external view returns (address, uint8) {
+        return (feeTo, feeProtocol);
     }
 
     function createPair(address tokenA, address tokenB) external returns (address pair) {
@@ -42,6 +49,12 @@ contract IceCreamSwapV2Factory is IIceCreamSwapV2Factory {
     function setFeeTo(address _feeTo) external {
         require(msg.sender == feeToSetter, "IceCreamSwapV2: FORBIDDEN");
         feeTo = _feeTo;
+    }
+
+    function setFeeProtocol(uint8 _feeProtocol) external {
+        require(msg.sender == feeToSetter, "IceCreamSwapV2: FORBIDDEN");
+        require(_feeProtocol <= 100, "IceCreamSwapV2: FEE_TO_HIGH");
+        feeProtocol = _feeProtocol;
     }
 
     function setFeeToSetter(address _feeToSetter) external {

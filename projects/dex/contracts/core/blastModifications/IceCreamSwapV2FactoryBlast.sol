@@ -9,7 +9,7 @@ contract IceCreamSwapV2FactoryBlast is IceCreamSwapV2Factory, NativeYield {
         _;
     }
 
-    constructor(address _feeToSetter) public IceCreamSwapV2Factory(_feeToSetter) {}
+    constructor(address _feeToSetter, uint8 _feeProtocol) public IceCreamSwapV2Factory(_feeToSetter, _feeProtocol) {}
 
     function claimYields(address recipient) external onlyFeeToSetter {
         _claimYields(recipient);
