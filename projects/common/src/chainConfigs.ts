@@ -336,6 +336,16 @@ const chainConfigs = {
     oneDollarInNative: "14595344085236800",
     weth: "0x75cb093e4d61d2a2e65d8e0bbb01de8d89b53481",
   },
+  xlayer: {
+    chainId: 196,
+    url: "https://xlayerrpc.okx.com",
+    explorer: "https://www.oklink.com/xlayer",
+    explorerApi: "https://www.oklink.com/api/v5/explorer/contract/verify-source-code-plugin/XLAYER",
+    explorerApiKey: "NoKeyRequired",
+    bridgeDomainId: -1,
+    oneDollarInNative: "18460400000000000",
+    weth: "0xe538905cf8410324e03a5a23c1c177a474d59b2b",
+  },
 
 } as const;
 
