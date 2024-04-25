@@ -346,6 +346,16 @@ const chainConfigs = {
     oneDollarInNative: "18460400000000000",
     weth: "0xe538905cf8410324e03a5a23c1c177a474d59b2b",
   },
+  cronos: {
+    chainId: 25,
+    url: "https://evm.cronos.org",
+    explorer: "https://explorer.cronos.org",
+    explorerApi: "https://explorer-api.cronos.org/mainnet/api/v1/hardhat//contract?apikey=",
+    explorerApiKey: process.env.EXPLORER_API_KEY_CRONOS,
+    bridgeDomainId: -1,
+    oneDollarInNative: "8025682182985553920",
+    weth: "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
+  },
 
 } as const;
 
