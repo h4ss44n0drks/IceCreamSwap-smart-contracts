@@ -356,7 +356,26 @@ const chainConfigs = {
     oneDollarInNative: "8025682182985553920",
     weth: "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
   },
-
+  bob: {
+    chainId: 60808,
+    url: "https://rpc.gobob.xyz",
+    explorer: "https://explorer.gobob.xyz",
+    explorerApi: "https://explorer.gobob.xyz/api",
+    explorerApiKey: "NoKeyRequired",
+    bridgeDomainId: -1,
+    oneDollarInNative: "250000000000000",
+    weth: "0x4200000000000000000000000000000000000006",
+  },
+  rari: {
+    chainId: 1380012617,
+    url: "https://mainnet.rpc.rarichain.org/http",
+    explorer: "https://mainnet.explorer.rarichain.org",
+    explorerApi: "https://mainnet.explorer.rarichain.org/api",
+    explorerApiKey: "NoKeyRequired",
+    bridgeDomainId: 18,
+    oneDollarInNative: "250000000000000",
+    weth: "0xBb5e1777A331ED93E07cF043363e48d320eb96c4",
+  },
 } as const;
 
 export default chainConfigs;
