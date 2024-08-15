@@ -228,7 +228,7 @@ contract MulticallCombined {
 
             uint256 gasLeftBefore = gasleft();
             if (gasLeftBefore <= gasBuffer) {
-                return (blockNumber, returnData, i-1);
+                return (blockNumber, returnData, i);
             } else if (gasLeftBefore - gasBuffer < gasLimit) {
                 gasLimit = gasLeftBefore - gasBuffer;
             }
@@ -236,17 +236,14 @@ contract MulticallCombined {
             uint256 gasUsed = gasLeftBefore - gasleft();
 
             if (gasleft() < gasBuffer) {
-                if (success) {
-                    // only save call result if it was sucesfull. Call could had reverted due to out of gas
-                    returnData[i] = ResultGas(success, gasUsed, ret);
-                }
+                // don't save last call as it ran out of gas
                 return (blockNumber, returnData, i);
             }
 
             returnData[i] = ResultGas(success, gasUsed, ret);
         }
 
-        return (blockNumber, returnData, calls.length - 1);
+        return (blockNumber, returnData, calls.length);
     }
 
     function multicallWithGasLimitationValue(
@@ -266,7 +263,7 @@ contract MulticallCombined {
 
             uint256 gasLeftBefore = gasleft();
             if (gasLeftBefore <= gasBuffer) {
-                return (blockNumber, returnData, i-1);
+                return (blockNumber, returnData, i);
             } else if (gasLeftBefore - gasBuffer < gasLimit) {
                 gasLimit = gasLeftBefore - gasBuffer;
             }
@@ -274,17 +271,14 @@ contract MulticallCombined {
             uint256 gasUsed = gasLeftBefore - gasleft();
 
             if (gasleft() < gasBuffer) {
-                if (success) {
-                    // only save call result if it was sucesfull. Call could had reverted due to out of gas
-                    returnData[i] = ResultGas(success, gasUsed, ret);
-                }
+                // don't save last call as it ran out of gas
                 return (blockNumber, returnData, i);
             }
 
             returnData[i] = ResultGas(success, gasUsed, ret);
         }
 
-        return (blockNumber, returnData, calls.length - 1);
+        return (blockNumber, returnData, calls.length);
     }
 
     function deployContract(bytes memory contractBytecode) external returns (address contractAddr) {
