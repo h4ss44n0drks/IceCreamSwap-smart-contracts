@@ -235,7 +235,9 @@ contract MulticallCombined {
             (bool success, bytes memory ret) = target.call{gas: gasLimit}(callData);
             uint256 gasUsed = gasLeftBefore - gasleft();
 
-            if (gasleft() < gasBuffer) {
+            if (gasleft() < gasBuffer + gasLimit / 10) {
+                // call only passes 63/64 of all gas, really strange rule.
+                // with multiple nested calls, this can result in part of the TX running out of gas without the call itself reverting
                 // don't save last call as it ran out of gas
                 return (blockNumber, returnData, i);
             }
@@ -270,7 +272,9 @@ contract MulticallCombined {
             (bool success, bytes memory ret) = target.call{gas: gasLimit, value: value}(callData);
             uint256 gasUsed = gasLeftBefore - gasleft();
 
-            if (gasleft() < gasBuffer) {
+            if (gasleft() < gasBuffer + gasLimit / 10) {
+                // call only passes 63/64 of all gas, really strange rule.
+                // with multiple nested calls, this can result in part of the TX running out of gas without the call itself reverting
                 // don't save last call as it ran out of gas
                 return (blockNumber, returnData, i);
             }
