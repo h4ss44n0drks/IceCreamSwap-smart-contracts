@@ -215,7 +215,7 @@ contract MulticallCombined {
     function multicallWithGasLimitation(
         CallGas[] memory calls,
         uint256 gasBuffer
-    ) public returns (uint256 blockNumber, ResultGas[] memory returnData, uint256 lastSuccessIndex) {
+    ) public returns (uint256 blockNumber, ResultGas[] memory returnData) {
         blockNumber = block.number;
         returnData = new ResultGas[](calls.length);
 
@@ -228,24 +228,28 @@ contract MulticallCombined {
 
             uint256 gasLeftBefore = gasleft();
             if (gasLeftBefore <= gasBuffer) {
-                return (blockNumber, returnData, i);
+                assembly {
+                    mstore(returnData, i) // set actual length of returnData
+                }
+                return (blockNumber, returnData);
             } else if (gasLeftBefore - gasBuffer < gasLimit) {
                 gasLimit = gasLeftBefore - gasBuffer;
             }
             (bool success, bytes memory ret) = target.call{gas: gasLimit}(callData);
             uint256 gasUsed = gasLeftBefore - gasleft();
 
-            if (gasleft() < gasBuffer + gasLimit / 10) {
-                // call only passes 63/64 of all gas, really strange rule.
-                // with multiple nested calls, this can result in part of the TX running out of gas without the call itself reverting
-                // don't save last call as it ran out of gas
-                return (blockNumber, returnData, i);
-            }
-
             returnData[i] = ResultGas(success, gasUsed, ret);
+
+            if (gasleft() < gasBuffer + gasLimit / 10) {
+                assembly {
+                    mstore(returnData, add(i, 1)) // set actual length of returnData
+                }
+
+                return (blockNumber, returnData);
+            }
         }
 
-        return (blockNumber, returnData, calls.length);
+        return (blockNumber, returnData);
     }
 
     function multicallWithGasLimitationValue(
