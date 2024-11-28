@@ -1,0 +1,9 @@
+version = 1
+
+[[analyzers]]
+name = "solhint"
+type = "community"
+
+[[analyzers]]
+name = "slither"
+type = "community"
